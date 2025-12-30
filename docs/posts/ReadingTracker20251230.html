@@ -122,7 +122,19 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#reflections" id="toc-reflections" class="nav-link active" data-scroll-target="#reflections">Reflections</a>
+  <li><a href="#what-i-wanted-constraints-first" id="toc-what-i-wanted-constraints-first" class="nav-link active" data-scroll-target="#what-i-wanted-constraints-first">What I wanted (constraints first)</a></li>
+  <li><a href="#attempt-1-shortcut-notes-works-but-messy" id="toc-attempt-1-shortcut-notes-works-but-messy" class="nav-link" data-scroll-target="#attempt-1-shortcut-notes-works-but-messy">Attempt 1: Shortcut + Notes (works, but messy)</a></li>
+  <li><a href="#attempt-2-shortcut-numbersexcel-not-working-on-apple-watch" id="toc-attempt-2-shortcut-numbersexcel-not-working-on-apple-watch" class="nav-link" data-scroll-target="#attempt-2-shortcut-numbersexcel-not-working-on-apple-watch">Attempt 2: Shortcut + Numbers/Excel (not working on Apple Watch)</a>
+  <ul class="collapse">
+  <li><a href="#why-this-was-appealing" id="toc-why-this-was-appealing" class="nav-link" data-scroll-target="#why-this-was-appealing">Why this was appealing</a></li>
+  <li><a href="#why-i-didnt-stick-with-it" id="toc-why-i-didnt-stick-with-it" class="nav-link" data-scroll-target="#why-i-didnt-stick-with-it">Why I didn’t stick with it</a></li>
+  </ul></li>
+  <li><a href="#final-approach-use-calendar-as-the-database" id="toc-final-approach-use-calendar-as-the-database" class="nav-link" data-scroll-target="#final-approach-use-calendar-as-the-database">Final approach: Use Calendar as the database</a>
+  <ul class="collapse">
+  <li><a href="#how-it-works" id="toc-how-it-works" class="nav-link" data-scroll-target="#how-it-works">How it works</a></li>
+  <li><a href="#why-it-works-surprisingly-well" id="toc-why-it-works-surprisingly-well" class="nav-link" data-scroll-target="#why-it-works-surprisingly-well">Why it works surprisingly well</a></li>
+  </ul></li>
+  <li><a href="#reflections" id="toc-reflections" class="nav-link" data-scroll-target="#reflections">Reflections</a>
   <ul class="collapse">
   <li><a href="#first-timer-with-shortcuts" id="toc-first-timer-with-shortcuts" class="nav-link" data-scroll-target="#first-timer-with-shortcuts">First-Timer with Shortcuts</a></li>
   <li><a href="#talking-through-an-idea-really-helps" id="toc-talking-through-an-idea-really-helps" class="nav-link" data-scroll-target="#talking-through-an-idea-really-helps">Talking through an idea really helps</a></li>
@@ -179,67 +191,73 @@ ul.task-list li input[type="checkbox"] {
 <p>After looking into what was already available, I found that popular reading tracker apps (like Bookly and Bookmory) still didn’t fully meet my needs—both in design and in how accessible the data was—unless I paid for a subscription. And since the data I wanted felt fairly minimal, I started wondering: could I build something lightweight that stays local and gives me full control?</p>
 <p>After talking it through with ChatGPT, I decided to try a route that’s already built into the Apple ecosystem: <strong>Shortcuts</strong>, which works across iPhone and Apple Watch.</p>
 <p>This post documents the path I took—complete with a few zigzags—the setup that <em>actually stuck</em>, and the reflections I had along the way.</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th style="text-align: left;">## What I wanted (constraints first) My original idea was simple, but the constraints became clearer (and more realistic) as I built and tested the workflow: - <strong>Quick logging from Apple Watch + iPhone</strong> (ideally Watch-first, since I often don’t have my phone nearby while reading—this turned out to be a major constraint early on) - <strong>Start/end timestamps</strong>, so I can calculate duration later - <strong>A book title logged into each session</strong> - <strong>Data that’s easy to export and analyze in R/RMarkdown</strong> - <strong>Low maintenance</strong>: minimal typing, minimal file management (I don’t want tracking to add friction to a hobby) - <strong>Reusable/replicable</strong>: I realized the same approach could later track other hobbies too (like drawing), not just reading</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">## Attempt 1: Shortcut + Notes (works, but messy)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">My first <a href="https://www.icloud.com/shortcuts/d24beb697f5845ae8344ca21f70a261a">prototype</a> used <strong>Shortcuts</strong> to append reading logs into <strong>Apple Notes</strong>. It worked, but Notes has an important limitation in this context: each appended value becomes its own line. That means a single session quickly turns into multiple lines—book title, start time, stop time, plus separators to keep the log readable (and editable if I logged something wrong).</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Below is what the raw data looked like after a few iterations:</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Book: The Story of a New Name Start at 2025-12-29T18:28:27-05:00 Stop at 2025-12-29T18:28:30-05:00</td>
-</tr>
-</tbody>
-</table>
-<p>Book: The Kite Runner Start at 2025-12-29T18:39:24-05:00 Stop at 2025-12-29T18:39:29-05:00 —— Book: The Story of a New Name Start at 2025-12-29T19:28:27-05:00 Stop at 2025-12-29T19:28:30-05:00 ——</p>
+<section id="what-i-wanted-constraints-first" class="level2">
+<h2 class="anchored" data-anchor-id="what-i-wanted-constraints-first">What I wanted (constraints first)</h2>
+<p>My original idea was simple, but the constraints became clearer (and more realistic) as I built and tested the workflow: - <strong>Quick logging from Apple Watch + iPhone</strong> (ideally Watch-first, since I often don’t have my phone nearby while reading—this turned out to be a major constraint early on) - <strong>Start/end timestamps</strong>, so I can calculate duration later - <strong>A book title logged into each session</strong> - <strong>Data that’s easy to export and analyze in R/RMarkdown</strong> - <strong>Low maintenance</strong>: minimal typing, minimal file management (I don’t want tracking to add friction to a hobby) - <strong>Reusable/replicable</strong>: I realized the same approach could later track other hobbies too (like drawing), not just reading</p>
+</section>
+<section id="attempt-1-shortcut-notes-works-but-messy" class="level2">
+<h2 class="anchored" data-anchor-id="attempt-1-shortcut-notes-works-but-messy">Attempt 1: Shortcut + Notes (works, but messy)</h2>
+<p>My first <a href="https://www.icloud.com/shortcuts/d24beb697f5845ae8344ca21f70a261a">prototype</a> used <strong>Shortcuts</strong> to append reading logs into <strong>Apple Notes</strong>. It worked, but Notes has an important limitation in this context: each appended value becomes its own line. That means a single session quickly turns into multiple lines—book title, start time, stop time, plus separators to keep the log readable (and editable if I logged something wrong).</p>
+<p>Below is what the raw data looked like after a few iterations:</p>
 <p>From a data perspective, this wasn’t <em>too</em> bad. If I logged one reading session per day, I’d end up with roughly 365 × 6 = 2,190 lines by the end of the year. In theory, I could copy the note into R and run a parsing script built around this structure.</p>
 <p>Still, my data instincts kept nagging at me: <em>this can’t be the best way.</em> The format felt not only rudimentary but also fragile—easy to break if I ever tweaked the wording, missed a line, or wanted to add one more field later.</p>
 <p>So I kept digging and tried another approach.</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th style="text-align: left;">## Attempt 2: Shortcut + Numbers/Excel (not working on Apple Watch)</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">## Final approach: Use Calendar as the database</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">While browsing more time-tracking workflows on Reddit, I came across an idea I hadn’t seriously considered: <strong>tracking time by creating Calendar events</strong>. My first reaction was that it felt like an unnecessary extra system. But when I was describing my experiments to my husband, it finally clicked—Calendar could <em>be</em> the database. I already use it extensively, it’s available on Apple Watch, and it stores start/end timestamps natively. Better yet, I could export everything later and analyze it in R.</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">This ended up being the simplest solution—while also offers much more than I expected.</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">### How it works</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">At a high level, this <a href="https://www.icloud.com/shortcuts/293b167ed3524085ad5915aa1d65d949">shortcut</a> does three things:</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">- <strong>Stores a book list</strong> inside the shortcut (so I can select a title quickly without typing) - <strong>On “Start”</strong>, saves the start timestamp to a small <code>.txt</code> file (stored in the Shortcuts folder on iCloud) - <strong>On “Stop”</strong>, creates a Calendar event using: - <strong>Event title:</strong> the selected book title - <strong>Start time:</strong> retrieved from the saved <code>.txt</code> file - <strong>End time:</strong> the current time when I stop the shortcut</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">### Why it works surprisingly well</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">- Calendar events already contain the two key fields I need: start and end - It’s easy to attach metadata like book title through Shortcuts - Reviewing and correcting sessions is simple—each session is just an editable event in the Calendar - Calendar sync is automatic across devices, including <strong>Apple Watch</strong> (a major constraint solved) - Exporting to <code>.ics</code> is standard and reliable; R has dedicated package to retrieve data from <code>.ics</code> - A dedicated calendar keeps the dataset clean (no mixing with real appointments) - The same approach can be reused for other activities and hobbies (like drawing) with almost no changes</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">What I like most is that it fits naturally into how I already use Calendar. I’m not trying to quantify reading habit as a tool for self-discipline. Instead, I’m more interested in seeing <em>how</em> reading shows up in my life—-when it happens, how consistent or inconsistent it is, and how my reading time spreads across different books and genres. Having sessions appear on my calendar makes reading time more visible, and it gives me a gentle, non-rigid way to notice patterns over time–patterns that will likely help me understand myself a little better in the future.</td>
-</tr>
-</tbody>
-</table>
+</section>
+<section id="attempt-2-shortcut-numbersexcel-not-working-on-apple-watch" class="level2">
+<h2 class="anchored" data-anchor-id="attempt-2-shortcut-numbersexcel-not-working-on-apple-watch">Attempt 2: Shortcut + Numbers/Excel (not working on Apple Watch)</h2>
+<p>Next I tried a more “structured data” approach. I found a <a href="https://www.reddit.com/r/shortcuts/comments/1dnxtqe/work_time_tracking_using_automation_on_shortcuts/">Reddit post</a> that shared a <a href="https://www.icloud.com/shortcuts/0c47d79424034eb3b421dfe07f5f264b">work time-tracking workflow</a> built with Shortcuts, which logs entries directly into a spreadsheet. I used that idea as a starting point and adapted it for reading.</p>
+<p>Its main difference from the Notes prototype is that <strong>Numbers becomes the database</strong>. Instead of writing raw text that I’d need to parse later, each session becomes a row in a spreadsheet—already structured, readable, and editable.</p>
+<p>I was able to quickly modify the shortcut to fit my needs. Here is the updated <a href="https://www.icloud.com/shortcuts/49a3d5b36b3a4e769d6e2d46db1db234">shortcut</a>. In the <a href="files/Reading Track.numbers">Numbers file</a>, I used three sheets to collect raw inputs and then clean the data: - <strong>Start</strong>: logs the book title + start timestamp<br>
+- <strong>End</strong>: logs the stop timestamp<br>
+- <strong>Time Tracking</strong>: uses formulas to join the two logs, cleans up the fields, and calculates duration per session.</p>
+<section id="why-this-was-appealing" class="level3">
+<h3 class="anchored" data-anchor-id="why-this-was-appealing">Why this was appealing</h3>
+<ul>
+<li>The data was immediately tidy: rows and columns, no parsing required.</li>
+<li>It was easy to review and correct mistakes.</li>
+<li>In theory, I could even do lightweight summaries inside Numbers.</li>
+</ul>
+</section>
+<section id="why-i-didnt-stick-with-it" class="level3">
+<h3 class="anchored" data-anchor-id="why-i-didnt-stick-with-it">Why I didn’t stick with it</h3>
+<p>This approach mostly worked—but it failed one of my core constraints. - <strong>Too much friction on the phone.</strong> Every time I ran the shortcut, Numbers popped open on my iPhone, and I had to manually close it. These two steps are rather redundant. - <strong>Dealbreaker: it doesn’t work on Apple Watch.</strong> Numbers isn’t available on Apple Watch, so the shortcut can’t run there. And since I often read without my phone nearby, Watch-first logging wasn’t optional for me.</p>
+<p>At this point, I was tempted to fall back to the Notes method—until I found a better alternative.</p>
+</section>
+</section>
+<section id="final-approach-use-calendar-as-the-database" class="level2">
+<h2 class="anchored" data-anchor-id="final-approach-use-calendar-as-the-database">Final approach: Use Calendar as the database</h2>
+<p>While browsing more time-tracking workflows on Reddit, I came across an idea I hadn’t seriously considered: <strong>tracking time by creating Calendar events</strong>. My first reaction was that it felt like an unnecessary extra system. But when I was describing my experiments to my husband, it finally clicked—Calendar could <em>be</em> the database. I already use it extensively, it’s available on Apple Watch, and it stores start/end timestamps natively. Better yet, I could export everything later and analyze it in R.</p>
+<p>This ended up being the simplest solution—while also offers much more than I expected.</p>
+<section id="how-it-works" class="level3">
+<h3 class="anchored" data-anchor-id="how-it-works">How it works</h3>
+<p>At a high level, this <a href="https://www.icloud.com/shortcuts/293b167ed3524085ad5915aa1d65d949">shortcut</a> does three things:</p>
+<ul>
+<li><strong>Stores a book list</strong> inside the shortcut (so I can select a title quickly without typing)</li>
+<li><strong>On “Start”</strong>, saves the start timestamp to a small <code>.txt</code> file (stored in the Shortcuts folder on iCloud)</li>
+<li><strong>On “Stop”</strong>, creates a Calendar event using:
+<ul>
+<li><strong>Event title:</strong> the selected book title<br>
+</li>
+<li><strong>Start time:</strong> retrieved from the saved <code>.txt</code> file<br>
+</li>
+<li><strong>End time:</strong> the current time when I stop the shortcut</li>
+</ul></li>
+</ul>
+</section>
+<section id="why-it-works-surprisingly-well" class="level3">
+<h3 class="anchored" data-anchor-id="why-it-works-surprisingly-well">Why it works surprisingly well</h3>
+<ul>
+<li>Calendar events already contain the two key fields I need: start and end</li>
+<li>It’s easy to attach metadata like book title through Shortcuts</li>
+<li>Reviewing and correcting sessions is simple—each session is just an editable event in the Calendar</li>
+<li>Calendar sync is automatic across devices, including <strong>Apple Watch</strong> (a major constraint solved)</li>
+<li>Exporting to <code>.ics</code> is standard and reliable; R has dedicated package to retrieve data from <code>.ics</code></li>
+<li>A dedicated calendar keeps the dataset clean (no mixing with real appointments)</li>
+<li>The same approach can be reused for other activities and hobbies (like drawing) with almost no changes</li>
+</ul>
+<p>What I like most is that it fits naturally into how I already use Calendar. I’m not trying to quantify reading habit as a tool for self-discipline. Instead, I’m more interested in seeing <em>how</em> reading shows up in my life—-when it happens, how consistent or inconsistent it is, and how my reading time spreads across different books and genres. Having sessions appear on my calendar makes reading time more visible, and it gives me a gentle, non-rigid way to notice patterns over time–patterns that will likely help me understand myself a little better in the future.</p>
+</section>
+</section>
 <section id="reflections" class="level2">
 <h2 class="anchored" data-anchor-id="reflections">Reflections</h2>
 <p>I will talk about the data export from Calendar and analysis in R in details in the next post. Here, I want to pause and share a few reflections from the process itself – what surprised me, what helped, and what I’d do again.</p>

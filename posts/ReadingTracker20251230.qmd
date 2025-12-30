@@ -19,8 +19,9 @@ After talking it through with ChatGPT, I decided to try a route that’s already
 This post documents the path I took—complete with a few zigzags—the setup that *actually stuck*, and the reflections I had along the way.
 
 
------------------------------------------------------------------------
+
 ## What I wanted (constraints first)
+
 My original idea was simple, but the constraints became clearer (and more realistic) as I built and tested the workflow: 
 - **Quick logging from Apple Watch + iPhone** (ideally Watch-first, since I often don’t have my phone nearby while reading—this turned out to be a major constraint early on) 
 - **Start/end timestamps**, so I can calculate duration later 
@@ -28,32 +29,12 @@ My original idea was simple, but the constraints became clearer (and more realis
 - **Data that’s easy to export and analyze in R/RMarkdown** 
 - **Low maintenance**: minimal typing, minimal file management (I don’t want tracking to add friction to a hobby) - **Reusable/replicable**: I realized the same approach could later track other hobbies too (like drawing), not just reading 
 
------------------------------------------------------------------------
+
 ## Attempt 1: Shortcut + Notes (works, but messy)
 
 My first [prototype](https://www.icloud.com/shortcuts/d24beb697f5845ae8344ca21f70a261a) used **Shortcuts** to append reading logs into **Apple Notes**. It worked, but Notes has an important limitation in this context: each appended value becomes its own line. That means a single session quickly turns into multiple lines—book title, start time, stop time, plus separators to keep the log readable (and editable if I logged something wrong).
 
 Below is what the raw data looked like after a few iterations:
-
-Book: The Story of a New Name
-Start at
-2025-12-29T18:28:27-05:00
-Stop at
-2025-12-29T18:28:30-05:00
-------
-Book: The Kite Runner
-Start at
-2025-12-29T18:39:24-05:00
-Stop at
-2025-12-29T18:39:29-05:00
-------
-Book: The Story of a New Name
-Start at
-2025-12-29T19:28:27-05:00
-Stop at
-2025-12-29T19:28:30-05:00
-------
-
 
 From a data perspective, this wasn’t *too* bad. If I logged one reading session per day, I’d end up with roughly 365 × 6 = 2,190 lines by the end of the year. In theory, I could copy the note into R and run a parsing script built around this structure.
 
@@ -62,7 +43,7 @@ Still, my data instincts kept nagging at me: *this can’t be the best way.* The
 So I kept digging and tried another approach.
 
 
-------------------------------------------------------------------------
+
 ## Attempt 2: Shortcut + Numbers/Excel (not working on Apple Watch)
 
 Next I tried a more “structured data” approach. I found a [Reddit post](https://www.reddit.com/r/shortcuts/comments/1dnxtqe/work_time_tracking_using_automation_on_shortcuts/) that shared a [work time-tracking workflow](https://www.icloud.com/shortcuts/0c47d79424034eb3b421dfe07f5f264b) built with Shortcuts, which logs entries directly into a spreadsheet. I used that idea as a starting point and adapted it for reading.  
@@ -87,7 +68,7 @@ This approach mostly worked—but it failed one of my core constraints.
 
 At this point, I was tempted to fall back to the Notes method—until I found a better alternative.
 
-------------------------------------------------------------------------
+
 ## Final approach: Use Calendar as the database
 
 While browsing more time-tracking workflows on Reddit, I came across an idea I hadn’t seriously considered: **tracking time by creating Calendar events**. My first reaction was that it felt like an unnecessary extra system. But when I was describing my experiments to my husband, it finally clicked—Calendar could *be* the database. I already use it extensively, it’s available on Apple Watch, and it stores start/end timestamps natively. Better yet, I could export everything later and analyze it in R.
@@ -118,7 +99,6 @@ At a high level, this [shortcut](https://www.icloud.com/shortcuts/293b167ed35240
 What I like most is that it fits naturally into how I already use Calendar. I’m not trying to quantify reading habit as a tool for self-discipline. Instead, I’m more interested in seeing *how* reading shows up in my life—-when it happens, how consistent or inconsistent it is, and how my reading time spreads across different books and genres. Having sessions appear on my calendar makes reading time more visible, and it gives me a gentle, non-rigid way to notice patterns over time--patterns that will likely help me understand myself a little better in the future.
 
 
-------------------------------------------------------------------------
 ## Reflections
 
 I will talk about the data export from Calendar and analysis in R in details in the next post. Here, I want to pause and share a few reflections from the process itself -- what surprised me, what helped, and what I'd do again.

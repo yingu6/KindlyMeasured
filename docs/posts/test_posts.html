@@ -6,9 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2025-12-29">
+<meta name="dcterms.date" content="2025-12-30">
+<meta name="description" content="A small experiment: logging reading sessions on IOS devices, exporting Calendar data, and analyzing and reporting it in Rmarkdown.">
 
-<title>Reading Tracker: from Shortcuts to R – Kindly Measured</title>
+<title>Building a Reading Time Tracker (Shortcuts → Calendar → RMarkdown) – Kindly Measured</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,6 +21,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -72,8 +108,8 @@ ul.task-list li input[type="checkbox"] {
 
 
 <link rel="stylesheet" href="../styles.css">
-<meta property="og:title" content="Reading Tracker: from Shortcuts to R – Kindly Measured">
-<meta property="og:description" content="">
+<meta property="og:title" content="Building a Reading Time Tracker (Shortcuts → Calendar → RMarkdown) – Kindly Measured">
+<meta property="og:description" content="A small experiment: logging reading sessions on IOS devices, exporting Calendar data, and analyzing and reporting it in Rmarkdown.">
 <meta property="og:site_name" content="Kindly Measured">
 </head>
 
@@ -84,6 +120,9 @@ ul.task-list li input[type="checkbox"] {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../logo.png" alt="" class="navbar-logo">
+    </a>
     <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">Kindly Measured</span>
     </a>
@@ -113,21 +152,47 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#what-i-wanted-constraints-first" id="toc-what-i-wanted-constraints-first" class="nav-link active" data-scroll-target="#what-i-wanted-constraints-first">What I wanted (constraints first)</a></li>
+  <li><a href="#attempt-1-writing-logs-to-notes-works-but-messy" id="toc-attempt-1-writing-logs-to-notes-works-but-messy" class="nav-link" data-scroll-target="#attempt-1-writing-logs-to-notes-works-but-messy">Attempt 1: Writing logs to Notes (works, but messy)</a></li>
+  <li><a href="#attempt-2-writing-to-csv-files-blocked-by-environment" id="toc-attempt-2-writing-to-csv-files-blocked-by-environment" class="nav-link" data-scroll-target="#attempt-2-writing-to-csv-files-blocked-by-environment">Attempt 2: Writing to CSV / Files (blocked by environment)</a></li>
+  <li><a href="#final-approach-use-calendar-as-the-database" id="toc-final-approach-use-calendar-as-the-database" class="nav-link" data-scroll-target="#final-approach-use-calendar-as-the-database">Final approach: Use Calendar as the database</a>
+  <ul class="collapse">
+  <li><a href="#why-calendar-works-surprisingly-well" id="toc-why-calendar-works-surprisingly-well" class="nav-link" data-scroll-target="#why-calendar-works-surprisingly-well">Why Calendar works surprisingly well</a></li>
+  <li><a href="#the-shortcuts-idea" id="toc-the-shortcuts-idea" class="nav-link" data-scroll-target="#the-shortcuts-idea">The Shortcuts idea</a></li>
+  </ul></li>
+  <li><a href="#data-export-calendar-.ics-r" id="toc-data-export-calendar-.ics-r" class="nav-link" data-scroll-target="#data-export-calendar-.ics-r">Data export: Calendar → <code>.ics</code> → R</a></li>
+  <li><a href="#analysis-in-r" id="toc-analysis-in-r" class="nav-link" data-scroll-target="#analysis-in-r">Analysis in R</a>
+  <ul class="collapse">
+  <li><a href="#libraries" id="toc-libraries" class="nav-link" data-scroll-target="#libraries">Libraries</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Reading Tracker: from Shortcuts to R</h1>
+<h1 class="title">Building a Reading Time Tracker (Shortcuts → Calendar → RMarkdown)</h1>
   <div class="quarto-categories">
-    <div class="quarto-category">tracking</div>
     <div class="quarto-category">reading</div>
+    <div class="quarto-category">tracking</div>
+    <div class="quarto-category">shortcuts</div>
+    <div class="quarto-category">r</div>
+    <div class="quarto-category">rmarkdown</div>
   </div>
   </div>
 
+<div>
+  <div class="description">
+    A small experiment: logging reading sessions on IOS devices, exporting Calendar data, and analyzing and reporting it in Rmarkdown.
+  </div>
+</div>
 
 
 <div class="quarto-title-meta">
@@ -136,7 +201,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">December 29, 2025</p>
+      <p class="date">December 30, 2025</p>
     </div>
   </div>
   
@@ -148,9 +213,115 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>test</p>
+<p>I wanted a reading habit tracker that felt <em>easy enough to do daily</em>, worked on my iPhone/watch, and produced data I could analyze later in R. The goal wasn’t a perfect app—it was a lightweight workflow I’d actually use.</p>
+<p>This post documents the path I took, including a few wrong turns, and the final setup that <em>actually stuck</em>.</p>
+<section id="what-i-wanted-constraints-first" class="level2">
+<h2 class="anchored" data-anchor-id="what-i-wanted-constraints-first">What I wanted (constraints first)</h2>
+<ul>
+<li>Quick logging from iPhone + Apple Watch</li>
+<li>Track start/end time (so duration is automatic)</li>
+<li>Associate each session with a book title</li>
+<li>Data should be easy to export and analyze in R/RMarkdown</li>
+<li>Low-maintenance: minimal typing, minimal file management</li>
+</ul>
+<p>I also wanted to reuse the same approach later for drawing practice (time only).</p>
+<hr>
+</section>
+<section id="attempt-1-writing-logs-to-notes-works-but-messy" class="level2">
+<h2 class="anchored" data-anchor-id="attempt-1-writing-logs-to-notes-works-but-messy">Attempt 1: Writing logs to Notes (works, but messy)</h2>
+<p>My first prototype used Shortcuts to append entries into Apple Notes:</p>
+<p>Book: The Story of a New Name Start at 2025-12-29T18:28:27-05:00 Stop at 2025-12-29T18:28:30-05:00</p>
+<p>This worked… but I quickly hit two friction points:</p>
+<ol type="1">
+<li><strong>Parsing text logs is annoying</strong> (totally doable, but brittle if formatting changes).</li>
+<li><strong>Start vs Stop is hard to “pair” reliably</strong> unless I’m very careful.</li>
+</ol>
+<p>I realized I didn’t actually want to invent a mini database inside Notes.</p>
+<p>So I tried something else.</p>
+<hr>
+</section>
+<section id="attempt-2-writing-to-csv-files-blocked-by-environment" class="level2">
+<h2 class="anchored" data-anchor-id="attempt-2-writing-to-csv-files-blocked-by-environment">Attempt 2: Writing to CSV / Files (blocked by environment)</h2>
+<p>The CSV approach is clean: <code>books.csv</code> for metadata and <code>sessions.csv</code> for time logs. But on my work laptop, iCloud Drive integration wasn’t available, and I didn’t want file path problems to become the project.</p>
+<p>I could have forced it using a different storage location, but the “it must be easy every day” constraint mattered more than elegance.</p>
+<p>So I pivoted again.</p>
+<hr>
+</section>
+<section id="final-approach-use-calendar-as-the-database" class="level2">
+<h2 class="anchored" data-anchor-id="final-approach-use-calendar-as-the-database">Final approach: Use Calendar as the database</h2>
+<p>This ended up being the simplest solution.</p>
+<section id="why-calendar-works-surprisingly-well" class="level3">
+<h3 class="anchored" data-anchor-id="why-calendar-works-surprisingly-well">Why Calendar works surprisingly well</h3>
+<ul>
+<li>Calendar events already have <strong>start</strong> and <strong>end</strong></li>
+<li>Calendar is <strong>synced</strong> across iPhone/watch/mac automatically</li>
+<li>Exporting <code>.ics</code> is standard</li>
+<li>Each event can store the book title in <code>SUMMARY</code></li>
+<li>A dedicated calendar means the data stays clean (no mixing with real meetings)</li>
+</ul>
+</section>
+<section id="the-shortcuts-idea" class="level3">
+<h3 class="anchored" data-anchor-id="the-shortcuts-idea">The Shortcuts idea</h3>
+<ul>
+<li>Shortcut asks me to choose a book (from a list)</li>
+<li>It creates a calendar event that starts now</li>
+<li>The “end” time is set when I stop (either by editing, or via a second shortcut)</li>
+<li>Event title contains the book name (I use a simple prefix like <code>Book1:</code> etc.)</li>
+</ul>
+<p>If you want it even simpler, you can skip book IDs and just use the title.</p>
+<hr>
+</section>
+</section>
+<section id="data-export-calendar-.ics-r" class="level2">
+<h2 class="anchored" data-anchor-id="data-export-calendar-.ics-r">Data export: Calendar → <code>.ics</code> → R</h2>
+<p>At intervals (weekly/monthly), I export the dedicated calendar as an <code>.ics</code> file and bring it into R.</p>
+<p>In the <code>.ics</code>, each event looks roughly like:</p>
+<ul>
+<li><code>DTSTART</code> (start datetime)</li>
+<li><code>DTEND</code> (end datetime)</li>
+<li><code>SUMMARY</code> (book label)</li>
+<li><code>UID</code>, <code>CREATED</code>, etc.</li>
+</ul>
+<p>In R, I convert to a data frame and compute durations.</p>
+<hr>
+</section>
+<section id="analysis-in-r" class="level2">
+<h2 class="anchored" data-anchor-id="analysis-in-r">Analysis in R</h2>
+<section id="libraries" class="level3">
+<h3 class="anchored" data-anchor-id="libraries">Libraries</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'dplyr'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:stats':
+
+    filter, lag</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stringr)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'lubridate'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    date, intersect, setdiff, union</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

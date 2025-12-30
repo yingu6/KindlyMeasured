@@ -4,7 +4,7 @@
     "href": "posts.html",
     "title": "posts",
     "section": "",
-    "text": "Reading Tracker: from Shortcuts to R\n\n\n\ntracking\n\nreading\n\n\n\n\n\n\n\n\n\nDec 29, 2025\n\n\n\n\n\nNo matching items"
+    "text": "Building a Reading Time Tracker (Shortcuts → Calendar → RMarkdown)\n\n\n\nreading\n\ntracking\n\nshortcuts\n\nr\n\nrmarkdown\n\n\n\nA small experiment: logging reading sessions on IOS devices, exporting Calendar data, and analyzing and reporting it in Rmarkdown.\n\n\n\n\n\nDec 30, 2025\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "index.html",
@@ -16,9 +16,51 @@
   {
     "objectID": "posts/test_posts.html",
     "href": "posts/test_posts.html",
-    "title": "Reading Tracker: from Shortcuts to R",
+    "title": "Building a Reading Time Tracker (Shortcuts → Calendar → RMarkdown)",
     "section": "",
-    "text": "test"
+    "text": "I wanted a reading habit tracker that felt easy enough to do daily, worked on my iPhone/watch, and produced data I could analyze later in R. The goal wasn’t a perfect app—it was a lightweight workflow I’d actually use.\nThis post documents the path I took, including a few wrong turns, and the final setup that actually stuck."
+  },
+  {
+    "objectID": "posts/test_posts.html#what-i-wanted-constraints-first",
+    "href": "posts/test_posts.html#what-i-wanted-constraints-first",
+    "title": "Building a Reading Time Tracker (Shortcuts → Calendar → RMarkdown)",
+    "section": "What I wanted (constraints first)",
+    "text": "What I wanted (constraints first)\n\nQuick logging from iPhone + Apple Watch\nTrack start/end time (so duration is automatic)\nAssociate each session with a book title\nData should be easy to export and analyze in R/RMarkdown\nLow-maintenance: minimal typing, minimal file management\n\nI also wanted to reuse the same approach later for drawing practice (time only)."
+  },
+  {
+    "objectID": "posts/test_posts.html#attempt-1-writing-logs-to-notes-works-but-messy",
+    "href": "posts/test_posts.html#attempt-1-writing-logs-to-notes-works-but-messy",
+    "title": "Building a Reading Time Tracker (Shortcuts → Calendar → RMarkdown)",
+    "section": "Attempt 1: Writing logs to Notes (works, but messy)",
+    "text": "Attempt 1: Writing logs to Notes (works, but messy)\nMy first prototype used Shortcuts to append entries into Apple Notes:\nBook: The Story of a New Name Start at 2025-12-29T18:28:27-05:00 Stop at 2025-12-29T18:28:30-05:00\nThis worked… but I quickly hit two friction points:\n\nParsing text logs is annoying (totally doable, but brittle if formatting changes).\nStart vs Stop is hard to “pair” reliably unless I’m very careful.\n\nI realized I didn’t actually want to invent a mini database inside Notes.\nSo I tried something else."
+  },
+  {
+    "objectID": "posts/test_posts.html#attempt-2-writing-to-csv-files-blocked-by-environment",
+    "href": "posts/test_posts.html#attempt-2-writing-to-csv-files-blocked-by-environment",
+    "title": "Building a Reading Time Tracker (Shortcuts → Calendar → RMarkdown)",
+    "section": "Attempt 2: Writing to CSV / Files (blocked by environment)",
+    "text": "Attempt 2: Writing to CSV / Files (blocked by environment)\nThe CSV approach is clean: books.csv for metadata and sessions.csv for time logs. But on my work laptop, iCloud Drive integration wasn’t available, and I didn’t want file path problems to become the project.\nI could have forced it using a different storage location, but the “it must be easy every day” constraint mattered more than elegance.\nSo I pivoted again."
+  },
+  {
+    "objectID": "posts/test_posts.html#final-approach-use-calendar-as-the-database",
+    "href": "posts/test_posts.html#final-approach-use-calendar-as-the-database",
+    "title": "Building a Reading Time Tracker (Shortcuts → Calendar → RMarkdown)",
+    "section": "Final approach: Use Calendar as the database",
+    "text": "Final approach: Use Calendar as the database\nThis ended up being the simplest solution.\n\nWhy Calendar works surprisingly well\n\nCalendar events already have start and end\nCalendar is synced across iPhone/watch/mac automatically\nExporting .ics is standard\nEach event can store the book title in SUMMARY\nA dedicated calendar means the data stays clean (no mixing with real meetings)\n\n\n\nThe Shortcuts idea\n\nShortcut asks me to choose a book (from a list)\nIt creates a calendar event that starts now\nThe “end” time is set when I stop (either by editing, or via a second shortcut)\nEvent title contains the book name (I use a simple prefix like Book1: etc.)\n\nIf you want it even simpler, you can skip book IDs and just use the title."
+  },
+  {
+    "objectID": "posts/test_posts.html#data-export-calendar-.ics-r",
+    "href": "posts/test_posts.html#data-export-calendar-.ics-r",
+    "title": "Building a Reading Time Tracker (Shortcuts → Calendar → RMarkdown)",
+    "section": "Data export: Calendar → .ics → R",
+    "text": "Data export: Calendar → .ics → R\nAt intervals (weekly/monthly), I export the dedicated calendar as an .ics file and bring it into R.\nIn the .ics, each event looks roughly like:\n\nDTSTART (start datetime)\nDTEND (end datetime)\nSUMMARY (book label)\nUID, CREATED, etc.\n\nIn R, I convert to a data frame and compute durations."
+  },
+  {
+    "objectID": "posts/test_posts.html#analysis-in-r",
+    "href": "posts/test_posts.html#analysis-in-r",
+    "title": "Building a Reading Time Tracker (Shortcuts → Calendar → RMarkdown)",
+    "section": "Analysis in R",
+    "text": "Analysis in R\n\nLibraries\n\nlibrary(dplyr)\n\n\nAttaching package: 'dplyr'\n\n\nThe following objects are masked from 'package:stats':\n\n    filter, lag\n\n\nThe following objects are masked from 'package:base':\n\n    intersect, setdiff, setequal, union\n\nlibrary(stringr)\nlibrary(lubridate)\n\n\nAttaching package: 'lubridate'\n\n\nThe following objects are masked from 'package:base':\n\n    date, intersect, setdiff, union\n\nlibrary(ggplot2)"
   },
   {
     "objectID": "about.html",

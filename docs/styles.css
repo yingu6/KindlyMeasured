@@ -1,1 +1,14 @@
 /* css styles */
+/* Broader selector, still keeps headings sketchy */
+main article p,
+main article li,
+main article td,
+main article th,
+main article blockquote,
+main article .callout-body,
+main article .cell-output,
+main article .footnotes {
+  font-family: system-ui, -apple-system, "SF Pro Text", "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: 1.02rem;
+  line-height: 1.65;
+}

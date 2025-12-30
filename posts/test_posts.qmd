@@ -1,7 +1,103 @@
 ---
-title: "Reading Tracker: from Shortcuts to R"
-date: 2025-12-29
-categories: [tracking, reading]
+title: "Building a Reading Time Tracker (Shortcuts → Calendar → RMarkdown)"
+date: 2025-12-30
+categories: [reading, tracking, shortcuts, r, rmarkdown]
+description: "A small experiment: logging reading sessions on IOS devices, exporting Calendar data, and analyzing and reporting it in Rmarkdown."
 ---
 
-test
+I wanted a reading habit tracker that felt *easy enough to do daily*, worked on my iPhone/watch, and produced data I could analyze later in R. The goal wasn’t a perfect app—it was a lightweight workflow I’d actually use.
+
+This post documents the path I took, including a few wrong turns, and the final setup that *actually stuck*.
+
+## What I wanted (constraints first)
+
+- Quick logging from iPhone + Apple Watch
+- Track start/end time (so duration is automatic)
+- Associate each session with a book title
+- Data should be easy to export and analyze in R/RMarkdown
+- Low-maintenance: minimal typing, minimal file management
+
+I also wanted to reuse the same approach later for drawing practice (time only).
+
+---
+
+## Attempt 1: Writing logs to Notes (works, but messy)
+
+My first prototype used Shortcuts to append entries into Apple Notes:
+
+Book: The Story of a New Name
+Start at
+2025-12-29T18:28:27-05:00
+Stop at
+2025-12-29T18:28:30-05:00
+
+This worked… but I quickly hit two friction points:
+
+1. **Parsing text logs is annoying** (totally doable, but brittle if formatting changes).
+2. **Start vs Stop is hard to “pair” reliably** unless I’m very careful.
+
+I realized I didn’t actually want to invent a mini database inside Notes.
+
+So I tried something else.
+
+---
+
+## Attempt 2: Writing to CSV / Files (blocked by environment)
+
+The CSV approach is clean: `books.csv` for metadata and `sessions.csv` for time logs. But on my work laptop, iCloud Drive integration wasn’t available, and I didn’t want file path problems to become the project.
+
+I could have forced it using a different storage location, but the “it must be easy every day” constraint mattered more than elegance.
+
+So I pivoted again.
+
+---
+
+## Final approach: Use Calendar as the database
+
+This ended up being the simplest solution.
+
+### Why Calendar works surprisingly well
+
+- Calendar events already have **start** and **end**
+- Calendar is **synced** across iPhone/watch/mac automatically
+- Exporting `.ics` is standard
+- Each event can store the book title in `SUMMARY`
+- A dedicated calendar means the data stays clean (no mixing with real meetings)
+
+### The Shortcuts idea
+
+- Shortcut asks me to choose a book (from a list)
+- It creates a calendar event that starts now
+- The “end” time is set when I stop (either by editing, or via a second shortcut)
+- Event title contains the book name (I use a simple prefix like `Book1:` etc.)
+
+If you want it even simpler, you can skip book IDs and just use the title.
+
+---
+
+## Data export: Calendar → `.ics` → R
+
+At intervals (weekly/monthly), I export the dedicated calendar as an `.ics` file and bring it into R.
+
+In the `.ics`, each event looks roughly like:
+
+- `DTSTART` (start datetime)
+- `DTEND` (end datetime)
+- `SUMMARY` (book label)
+- `UID`, `CREATED`, etc.
+
+In R, I convert to a data frame and compute durations.
+
+---
+
+## Analysis in R
+
+### Libraries
+
+```{r}
+library(dplyr)
+library(stringr)
+library(lubridate)
+library(ggplot2)
+```
+

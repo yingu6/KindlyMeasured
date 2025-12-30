@@ -12,6 +12,46 @@
 <generator>quarto-1.7.32</generator>
 <lastBuildDate>Tue, 30 Dec 2025 05:00:00 GMT</lastBuildDate>
 <item>
+  <title>Building a Reading Time Tracker [2]</title>
+  <link>https://yingu6.github.io/KindlyMeasured/posts/ReadingTracker2.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+
+ ]]></description>
+  <category>reading</category>
+  <category>tracking</category>
+  <category>shortcuts</category>
+  <category>calendar</category>
+  <category>r</category>
+  <category>rmarkdown</category>
+  <guid>https://yingu6.github.io/KindlyMeasured/posts/ReadingTracker2.html</guid>
+  <pubDate>Tue, 30 Dec 2025 05:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>Building a Personal Website Using Quarto</title>
+  <link>https://yingu6.github.io/KindlyMeasured/posts/Website.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+
+ ]]></description>
+  <category>quarto</category>
+  <category>blog</category>
+  <category>fonts</category>
+  <category>css</category>
+  <guid>https://yingu6.github.io/KindlyMeasured/posts/Website.html</guid>
+  <pubDate>Tue, 30 Dec 2025 05:00:00 GMT</pubDate>
+</item>
+<item>
   <title>Building a Reading Time Tracker [1]</title>
   <link>https://yingu6.github.io/KindlyMeasured/posts/ReadingTracker20251230.html</link>
   <description><![CDATA[ 
@@ -30,21 +70,51 @@
 <p>This post documents the path I took—complete with a few zigzags—the setup that <em>actually stuck</em>, and the reflections I had along the way.</p>
 <section id="what-i-wanted-constraints-first" class="level2">
 <h2 class="anchored" data-anchor-id="what-i-wanted-constraints-first">What I wanted (constraints first)</h2>
-<p>My original idea was simple, but the constraints became clearer (and more realistic) as I built and tested the workflow: - <strong>Quick logging from Apple Watch + iPhone</strong> (ideally Watch-first, since I often don’t have my phone nearby while reading—this turned out to be a major constraint early on) - <strong>Start/end timestamps</strong>, so I can calculate duration later - <strong>A book title logged into each session</strong> - <strong>Data that’s easy to export and analyze in R/RMarkdown</strong> - <strong>Low maintenance</strong>: minimal typing, minimal file management (I don’t want tracking to add friction to a hobby) - <strong>Reusable/replicable</strong>: I realized the same approach could later track other hobbies too (like drawing), not just reading</p>
+<p>My original idea was simple, but the constraints became clearer (and more realistic) as I built and tested the workflow:<br>
+- <strong>Quick logging from Apple Watch + iPhone</strong> (ideally Watch-first, since I often don’t have my phone nearby while reading—this turned out to be a major constraint early on)<br>
+- <strong>Start/end timestamps</strong>, so I can calculate duration later<br>
+- <strong>A book title logged into each session</strong><br>
+- <strong>Data that’s easy to export and analyze in R/RMarkdown</strong><br>
+- <strong>Low maintenance</strong>: minimal typing, minimal file management (I don’t want tracking to add friction to a hobby)<br>
+- <strong>Reusable/replicable</strong>: I realized the same approach could later track other hobbies too (like drawing), not just reading</p>
 </section>
-<section id="attempt-1-shortcut-notes-works-but-messy" class="level2">
-<h2 class="anchored" data-anchor-id="attempt-1-shortcut-notes-works-but-messy">Attempt 1: Shortcut + Notes (works, but messy)</h2>
+<section id="attempt-1-shortcuts-notes-works-but-messy" class="level2">
+<h2 class="anchored" data-anchor-id="attempt-1-shortcuts-notes-works-but-messy">Attempt 1: Shortcuts + Notes (works, but messy)</h2>
 <p>My first <a href="https://www.icloud.com/shortcuts/d24beb697f5845ae8344ca21f70a261a">prototype</a> used <strong>Shortcuts</strong> to append reading logs into <strong>Apple Notes</strong>. It worked, but Notes has an important limitation in this context: each appended value becomes its own line. That means a single session quickly turns into multiple lines—book title, start time, stop time, plus separators to keep the log readable (and editable if I logged something wrong).</p>
 <p>Below is what the raw data looked like after a few iterations:</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Book: The Story of a New Name
+Start at
+2025-12-29T18:28:27-05:00
+Stop at
+2025-12-29T18:28:30-05:00
+------
+Book: Kite Runner
+Start at
+2025-12-29T18:39:24-05:00
+Stop at
+2025-12-29T18:39:29-05:00
+------
+Book: The Story of a New Name
+Start at
+2025-12-29T19:28:27-05:00
+Stop at
+2025-12-29T19:28:30-05:00
+------</code></pre>
+</div>
+</div>
 <p>From a data perspective, this wasn’t <em>too</em> bad. If I logged one reading session per day, I’d end up with roughly 365 × 6 = 2,190 lines by the end of the year. In theory, I could copy the note into R and run a parsing script built around this structure.</p>
 <p>Still, my data instincts kept nagging at me: <em>this can’t be the best way.</em> The format felt not only rudimentary but also fragile—easy to break if I ever tweaked the wording, missed a line, or wanted to add one more field later.</p>
 <p>So I kept digging and tried another approach.</p>
 </section>
-<section id="attempt-2-shortcut-numbersexcel-not-working-on-apple-watch" class="level2">
-<h2 class="anchored" data-anchor-id="attempt-2-shortcut-numbersexcel-not-working-on-apple-watch">Attempt 2: Shortcut + Numbers/Excel (not working on Apple Watch)</h2>
+<section id="attempt-2-shortcuts-numbersexcel-not-working-on-apple-watch" class="level2">
+<h2 class="anchored" data-anchor-id="attempt-2-shortcuts-numbersexcel-not-working-on-apple-watch">Attempt 2: Shortcuts + Numbers/Excel (not working on Apple Watch)</h2>
 <p>Next I tried a more “structured data” approach. I found a <a href="https://www.reddit.com/r/shortcuts/comments/1dnxtqe/work_time_tracking_using_automation_on_shortcuts/">Reddit post</a> that shared a <a href="https://www.icloud.com/shortcuts/0c47d79424034eb3b421dfe07f5f264b">work time-tracking workflow</a> built with Shortcuts, which logs entries directly into a spreadsheet. I used that idea as a starting point and adapted it for reading.</p>
 <p>Its main difference from the Notes prototype is that <strong>Numbers becomes the database</strong>. Instead of writing raw text that I’d need to parse later, each session becomes a row in a spreadsheet—already structured, readable, and editable.</p>
-<p>I was able to quickly modify the shortcut to fit my needs. Here is the updated <a href="https://www.icloud.com/shortcuts/49a3d5b36b3a4e769d6e2d46db1db234">shortcut</a>. In the <a href="files/Reading Track.numbers">Numbers file</a>, I used three sheets to collect raw inputs and then clean the data: - <strong>Start</strong>: logs the book title + start timestamp<br>
+<p>I was able to quickly modify the shortcut to fit my needs. Here is the updated <a href="https://www.icloud.com/shortcuts/49a3d5b36b3a4e769d6e2d46db1db234">shortcut</a>. In the <a href="files/Reading Track.numbers">Numbers file</a>, I used three sheets to collect raw inputs and then clean the data:<br>
+- <strong>Start</strong>: logs the book title + start timestamp<br>
 - <strong>End</strong>: logs the stop timestamp<br>
 - <strong>Time Tracking</strong>: uses formulas to join the two logs, cleans up the fields, and calculates duration per session.</p>
 <section id="why-this-was-appealing" class="level3">
@@ -61,8 +131,8 @@
 <p>At this point, I was tempted to fall back to the Notes method—until I found a better alternative.</p>
 </section>
 </section>
-<section id="final-approach-use-calendar-as-the-database" class="level2">
-<h2 class="anchored" data-anchor-id="final-approach-use-calendar-as-the-database">Final approach: Use Calendar as the database</h2>
+<section id="final-approach-shortcuts-calendar-finally-works" class="level2">
+<h2 class="anchored" data-anchor-id="final-approach-shortcuts-calendar-finally-works">Final Approach: Shortcuts + Calendar (finally works!)</h2>
 <p>While browsing more time-tracking workflows on Reddit, I came across an idea I hadn’t seriously considered: <strong>tracking time by creating Calendar events</strong>. My first reaction was that it felt like an unnecessary extra system. But when I was describing my experiments to my husband, it finally clicked—Calendar could <em>be</em> the database. I already use it extensively, it’s available on Apple Watch, and it stores start/end timestamps natively. Better yet, I could export everything later and analyze it in R.</p>
 <p>This ended up being the simplest solution—while also offers much more than I expected.</p>
 <section id="how-it-works" class="level3">
@@ -98,8 +168,8 @@
 <section id="reflections" class="level2">
 <h2 class="anchored" data-anchor-id="reflections">Reflections</h2>
 <p>I will talk about the data export from Calendar and analysis in R in details in the next post. Here, I want to pause and share a few reflections from the process itself – what surprised me, what helped, and what I’d do again.</p>
-<section id="first-timer-with-shortcuts" class="level3">
-<h3 class="anchored" data-anchor-id="first-timer-with-shortcuts">First-Timer with Shortcuts</h3>
+<section id="shorcuts-learning-curve" class="level3">
+<h3 class="anchored" data-anchor-id="shorcuts-learning-curve">Shorcuts learning curve</h3>
 <p>Initially, I went back and forth on whether I should use existing tools to build this time-tracking workflow or take the more ambitious route and try to build an app. The app idea might sound unrealistic for someone without a software engineering background, but I’ve always liked learning new things, and this felt like a good excuse/motive to try. With today’s AI coding tools, the question isn’t really <em>whether</em> it’s possible, but how much time I’d be willing to invest.</p>
 <p>In the end, I chose the first route—using Shortcuts—because I wanted the process to be relatively quick and less demanding. If the project took too long, it would start stealing time from the very thing I was trying to support: reading. Shortcuts felt like a good middle ground: versatile enough to make life easier, but lightweight enough to keep the effort proportional to the goal. I’m still interested in building a small app one day—just not for this project, and not right now.</p>
 <p>At work, I’ve built quite a few automated workflows using tools like Power Automate, AppleScript, and R. So when I first started exploring Shortcuts, I didn’t expect much of a learning curve. I assumed I could follow a set of steps and get a working shortcut quickly.</p>
@@ -116,18 +186,30 @@
 <p>I still can’t believe the turning point came from a casual after-dinner conversation with my husband. I was explaining why my day felt rough—multiple failed Shortcut attempts—and what I had managed to achieve so far. I mentioned that I’d seen someone use Calendar as the “database” for time tracking. He asked a simple question: <em>how does that work?</em> And that question exposed a gap I hadn’t even noticed—I’d never really tested the Calendar option, and I wasn’t sure whether (or how) I could export all events from a dedicated calendar in a usable way.</p>
 <p>That was the moment the solution clicked.</p>
 <p>The turning point didn’t happen when I asked ChatGPT a hundred questions, and it didn’t happen when I collected more Shortcut examples. It happened when I tried to explain the problem out loud to another person.</p>
-<p>This <strong>learning-by-teaching</strong> idea isn’t new. In fact, it’s a well-studied learning strategy in education research. Studies and reviews show that when learners expect to teach, prepare to teach, or actually teach, they often process material more deeply (sometimes called the <strong>protégé effect</strong>). <a href="https://ui.adsabs.harvard.edu/abs/2009JSEdT..18..334C/abstract">oai_citation:0‡ADS</a> Related approaches are also widely used in teaching practice—especially in STEM—such as <strong>Peer Instruction</strong>, an evidence-based pedagogy with a large research base across disciplines. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4353089/?utm_source=chatgpt.com">oai_citation:1‡PMC</a> A closely related mechanism is <strong>self-explanation</strong>: putting your reasoning into words forces you to organize ideas, surface assumptions, and notice gaps in understanding. <a href="https://www.sciencedirect.com/science/article/pii/0364021394900167">oai_citation:2‡ScienceDirect</a></p>
+<p>This <strong>learning-by-teaching</strong> idea isn’t new—it’s a well-studied learning strategy. One related finding is the <strong>protégé effect</strong>: when learners expect to teach (or feel responsible for someone else’s learning), they often invest more effort and learn more deeply <span class="citation" data-cites="chase2009">(Chase et al., 2009)</span>. In classroom settings, a widely used cousin of this idea is <strong>Peer Instruction</strong>, an evidence-based approach with a large research base across STEM disciplines <span class="citation" data-cites="vickrey2015">(Vickrey et al., 2015)</span>. A closely related mechanism is <strong>self-explanation</strong>—putting your reasoning into words as you learn—which has also been shown to improve understanding even with minimal prompting <span class="citation" data-cites="chi1994">(Chi et al., 1994)</span>.</p>
 <p>In other words, when you try to teach—or even just explain—your thinking, you’re forced to organize it, name the assumptions you’ve been making, and notice what you don’t actually understand yet. Often, the “aha” comes not from new information, but from restructuring what you already know.</p>
 <p>On the other side of the story, my husband was being a really good listener. It reminded me of what good therapists often do: ask the right questions, hold the space, and help people arrive at their own answers.</p>
 
 
+
 </section>
 </section>
 
- ]]></description>
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2">
+<div id="ref-chase2009" class="csl-entry">
+Chase, C. C., Chin, D. B., Oppezzo, M. A., &amp; Schwartz, D. L. (2009). Teachable agents and the prot<span>é</span>g<span>é</span> effect: Increasing the effort towards learning. <em>Journal of Science Education and Technology</em>, <em>18</em>(4), 334–352. <a href="https://doi.org/10.1007/s10956-009-9180-4">https://doi.org/10.1007/s10956-009-9180-4</a>
+</div>
+<div id="ref-chi1994" class="csl-entry">
+Chi, M. T. H., De Leeuw, N., Chiu, M.-H., &amp; Lavancher, C. (1994). Eliciting self-explanations improves understanding. <em>Cognitive Science</em>, <em>18</em>(3), 439–477. <a href="https://doi.org/10.1016/0364-0213(94)90016-7">https://doi.org/10.1016/0364-0213(94)90016-7</a>
+</div>
+<div id="ref-vickrey2015" class="csl-entry">
+Vickrey, T., Rosploch, K., Rahmanian, R., Pilarz, M., &amp; Stains, M. (2015). Research-based implementation of peer instruction: A literature review. <em>CBE—Life Sciences Education</em>, <em>14</em>(1), es3. <a href="https://doi.org/10.1187/cbe.14-11-0198">https://doi.org/10.1187/cbe.14-11-0198</a>
+</div>
+</div></section></div> ]]></description>
   <category>reading</category>
   <category>tracking</category>
   <category>shortcuts</category>
+  <category>calendar</category>
   <category>r</category>
   <category>rmarkdown</category>
   <guid>https://yingu6.github.io/KindlyMeasured/posts/ReadingTracker20251230.html</guid>

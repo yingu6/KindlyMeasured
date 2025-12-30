@@ -1,0 +1,7 @@
+---
+title: "Building a Reading Time Tracker [2]"
+date: 2025-12-30
+categories: [reading, tracking, shortcuts, calendar, r, rmarkdown]
+description: "Logging reading sessions on IOS devices, exporting Calendar data, and analyzing and reporting data in Rmarkdown."
+---
+

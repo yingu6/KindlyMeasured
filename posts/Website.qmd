@@ -1,0 +1,8 @@
+---
+title: "Building a Personal Website Using Quarto"
+date: 2025-12-30
+date-modified: 2026-01-01
+categories: [quarto, blog, fonts, css]
+description: "A practical walkthrough of my Quarto website setup, from structure to styling."
+---
+

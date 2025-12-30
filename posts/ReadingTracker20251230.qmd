@@ -1,8 +1,10 @@
 ---
 title: "Building a Reading Time Tracker [1]"
 date: 2025-12-30
-categories: [reading, tracking, shortcuts, r, rmarkdown]
+categories: [reading, tracking, shortcuts, calendar, r, rmarkdown]
 description: "Logging reading sessions on IOS devices, exporting Calendar data, and analyzing and reporting data in Rmarkdown."
+bibliography: references.bib
+csl: apa.csl
 ---
 
 I’ve been using a Kindle for reading and Goodreads for reviews and logging. But neither gives me the kind of session-level data (or metadata) I want to understand my reading habits over time.
@@ -22,19 +24,44 @@ This post documents the path I took—complete with a few zigzags—the setup th
 
 ## What I wanted (constraints first)
 
-My original idea was simple, but the constraints became clearer (and more realistic) as I built and tested the workflow: 
-- **Quick logging from Apple Watch + iPhone** (ideally Watch-first, since I often don’t have my phone nearby while reading—this turned out to be a major constraint early on) 
-- **Start/end timestamps**, so I can calculate duration later 
-- **A book title logged into each session** 
-- **Data that’s easy to export and analyze in R/RMarkdown** 
-- **Low maintenance**: minimal typing, minimal file management (I don’t want tracking to add friction to a hobby) - **Reusable/replicable**: I realized the same approach could later track other hobbies too (like drawing), not just reading 
+My original idea was simple, but the constraints became clearer (and more realistic) as I built and tested the workflow:  
+- **Quick logging from Apple Watch + iPhone** (ideally Watch-first, since I often don’t have my phone nearby while reading—this turned out to be a major constraint early on)  
+- **Start/end timestamps**, so I can calculate duration later  
+- **A book title logged into each session**  
+- **Data that’s easy to export and analyze in R/RMarkdown**  
+- **Low maintenance**: minimal typing, minimal file management (I don’t want tracking to add friction to a hobby)   
+- **Reusable/replicable**: I realized the same approach could later track other hobbies too (like drawing), not just reading 
 
 
-## Attempt 1: Shortcut + Notes (works, but messy)
+## Attempt 1: Shortcuts + Notes (works, but messy)
 
 My first [prototype](https://www.icloud.com/shortcuts/d24beb697f5845ae8344ca21f70a261a) used **Shortcuts** to append reading logs into **Apple Notes**. It worked, but Notes has an important limitation in this context: each appended value becomes its own line. That means a single session quickly turns into multiple lines—book title, start time, stop time, plus separators to keep the log readable (and editable if I logged something wrong).
 
 Below is what the raw data looked like after a few iterations:
+
+```{r echo=FALSE}
+cat("
+Book: The Story of a New Name
+Start at
+2025-12-29T18:28:27-05:00
+Stop at
+2025-12-29T18:28:30-05:00
+------
+Book: Kite Runner
+Start at
+2025-12-29T18:39:24-05:00
+Stop at
+2025-12-29T18:39:29-05:00
+------
+Book: The Story of a New Name
+Start at
+2025-12-29T19:28:27-05:00
+Stop at
+2025-12-29T19:28:30-05:00
+------
+")
+```
+
 
 From a data perspective, this wasn’t *too* bad. If I logged one reading session per day, I’d end up with roughly 365 × 6 = 2,190 lines by the end of the year. In theory, I could copy the note into R and run a parsing script built around this structure.
 
@@ -44,14 +71,14 @@ So I kept digging and tried another approach.
 
 
 
-## Attempt 2: Shortcut + Numbers/Excel (not working on Apple Watch)
+## Attempt 2: Shortcuts + Numbers/Excel (not working on Apple Watch)
 
 Next I tried a more “structured data” approach. I found a [Reddit post](https://www.reddit.com/r/shortcuts/comments/1dnxtqe/work_time_tracking_using_automation_on_shortcuts/) that shared a [work time-tracking workflow](https://www.icloud.com/shortcuts/0c47d79424034eb3b421dfe07f5f264b) built with Shortcuts, which logs entries directly into a spreadsheet. I used that idea as a starting point and adapted it for reading.  
 
 Its main difference from the Notes prototype is that **Numbers becomes the database**. Instead of writing raw text that I’d need to parse later, each session becomes a row in a spreadsheet—already structured, readable, and editable.
 
 I was able to quickly modify the shortcut to fit my needs. Here is the updated [shortcut](https://www.icloud.com/shortcuts/49a3d5b36b3a4e769d6e2d46db1db234).
-In the [Numbers file](files/Reading Track.numbers), I used three sheets to collect raw inputs and then clean the data:
+In the [Numbers file](files/Reading Track.numbers), I used three sheets to collect raw inputs and then clean the data:  
 - **Start**: logs the book title + start timestamp  
 - **End**: logs the stop timestamp  
 - **Time Tracking**: uses formulas to join the two logs, cleans up the fields, and calculates duration per session.
@@ -69,7 +96,7 @@ This approach mostly worked—but it failed one of my core constraints.
 At this point, I was tempted to fall back to the Notes method—until I found a better alternative.
 
 
-## Final approach: Use Calendar as the database
+## Final Approach: Shortcuts + Calendar (finally works!)
 
 While browsing more time-tracking workflows on Reddit, I came across an idea I hadn’t seriously considered: **tracking time by creating Calendar events**. My first reaction was that it felt like an unnecessary extra system. But when I was describing my experiments to my husband, it finally clicked—Calendar could *be* the database. I already use it extensively, it’s available on Apple Watch, and it stores start/end timestamps natively. Better yet, I could export everything later and analyze it in R.
 
@@ -103,7 +130,7 @@ What I like most is that it fits naturally into how I already use Calendar. I’
 
 I will talk about the data export from Calendar and analysis in R in details in the next post. Here, I want to pause and share a few reflections from the process itself -- what surprised me, what helped, and what I'd do again.
 
-### First-Timer with Shortcuts
+### Shorcuts learning curve
 
 Initially, I went back and forth on whether I should use existing tools to build this time-tracking workflow or take the more ambitious route and try to build an app. The app idea might sound unrealistic for someone without a software engineering background, but I’ve always liked learning new things, and this felt like a good excuse/motive to try. With today’s AI coding tools, the question isn’t really *whether* it’s possible, but how much time I’d be willing to invest.
 
@@ -128,7 +155,7 @@ That was the moment the solution clicked.
 
 The turning point didn’t happen when I asked ChatGPT a hundred questions, and it didn’t happen when I collected more Shortcut examples. It happened when I tried to explain the problem out loud to another person.
 
-This **learning-by-teaching** idea isn’t new. In fact, it’s a well-studied learning strategy in education research. Studies and reviews show that when learners expect to teach, prepare to teach, or actually teach, they often process material more deeply (sometimes called the **protégé effect**).  [oai_citation:0‡ADS](https://ui.adsabs.harvard.edu/abs/2009JSEdT..18..334C/abstract) Related approaches are also widely used in teaching practice—especially in STEM—such as **Peer Instruction**, an evidence-based pedagogy with a large research base across disciplines.  [oai_citation:1‡PMC](https://pmc.ncbi.nlm.nih.gov/articles/PMC4353089/?utm_source=chatgpt.com) A closely related mechanism is **self-explanation**: putting your reasoning into words forces you to organize ideas, surface assumptions, and notice gaps in understanding.  [oai_citation:2‡ScienceDirect](https://www.sciencedirect.com/science/article/pii/0364021394900167)
+This **learning-by-teaching** idea isn’t new—it’s a well-studied learning strategy. One related finding is the **protégé effect**: when learners expect to teach (or feel responsible for someone else’s learning), they often invest more effort and learn more deeply [@chase2009]. In classroom settings, a widely used cousin of this idea is **Peer Instruction**, an evidence-based approach with a large research base across STEM disciplines [@vickrey2015]. A closely related mechanism is **self-explanation**—putting your reasoning into words as you learn—which has also been shown to improve understanding even with minimal prompting [@chi1994].
 
 In other words, when you try to teach—or even just explain—your thinking, you’re forced to organize it, name the assumptions you’ve been making, and notice what you don’t actually understand yet. Often, the “aha” comes not from new information, but from restructuring what you already know.
 

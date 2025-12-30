@@ -4,7 +4,6 @@ project:
 
 website:
   title: "Kindly Measured"
-  site-url: https://yingu6.github.io/KindlyMeasured/
   favicon: "logo/logo.png"
   navbar:
     title: "Kindly Measured"

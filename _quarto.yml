@@ -5,7 +5,7 @@ project:
 website:
   title: "Kindly Measured"
   site-url: https://yingu6.github.io/KindlyMeasured/
-  favicon: "logo/logo.png"
+  favicon: logo.png
   navbar:
     title: "Kindly Measured"
     href: index.qmd

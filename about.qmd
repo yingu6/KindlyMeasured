@@ -1,0 +1,21 @@
+---
+title: "Yin Gu"
+about:
+  id: hero-heading
+  template: jolla
+  image: profile.png
+  links:
+    - icon: github
+      text: Github
+      href: https://github.com
+---
+
+:::{#hero-heading}
+
+Yin has lived in a few different places—China, Malaysia, France, and now the United States. She’s sensitive to cultural variations and values how different experiences shape the way people think. With extensive experience working with data, she’s drawn to automation tools, data-driven insights, and the kind of curiosity that turns ordinary moments into something worth noticing.
+
+
+:::
+<!-- test content -->
+
+<!-- ### test -->

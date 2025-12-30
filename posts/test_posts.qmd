@@ -1,0 +1,7 @@
+---
+title: "Reading Tracker: from Shortcuts to R"
+date: 2025-12-29
+categories: [tracking, reading]
+---
+
+test

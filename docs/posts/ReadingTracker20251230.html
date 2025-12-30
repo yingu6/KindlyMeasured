@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="dcterms.date" content="2025-12-30">
-<meta name="description" content="A small experiment: logging reading sessions on IOS devices, exporting Calendar data, and analyzing and reporting it in Rmarkdown.">
+<meta name="description" content="Logging reading sessions on IOS devices, exporting Calendar data, and analyzing and reporting data in Rmarkdown.">
 
-<title>Building a Reading Time Tracker (Shortcuts → Calendar → RMarkdown) – Kindly Measured</title>
+<title>Building a Reading Time Tracker [1] – Kindly Measured</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -21,41 +21,6 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
-}
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -108,8 +73,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <link rel="stylesheet" href="../styles.css">
-<meta property="og:title" content="Building a Reading Time Tracker (Shortcuts → Calendar → RMarkdown) – Kindly Measured">
-<meta property="og:description" content="A small experiment: logging reading sessions on IOS devices, exporting Calendar data, and analyzing and reporting it in Rmarkdown.">
+<meta property="og:title" content="Building a Reading Time Tracker [1] – Kindly Measured">
+<meta property="og:description" content="Logging reading sessions on IOS devices, exporting Calendar data, and analyzing and reporting data in Rmarkdown.">
 <meta property="og:site_name" content="Kindly Measured">
 </head>
 
@@ -157,18 +122,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#what-i-wanted-constraints-first" id="toc-what-i-wanted-constraints-first" class="nav-link active" data-scroll-target="#what-i-wanted-constraints-first">What I wanted (constraints first)</a></li>
-  <li><a href="#attempt-1-writing-logs-to-notes-works-but-messy" id="toc-attempt-1-writing-logs-to-notes-works-but-messy" class="nav-link" data-scroll-target="#attempt-1-writing-logs-to-notes-works-but-messy">Attempt 1: Writing logs to Notes (works, but messy)</a></li>
-  <li><a href="#attempt-2-writing-to-csv-files-blocked-by-environment" id="toc-attempt-2-writing-to-csv-files-blocked-by-environment" class="nav-link" data-scroll-target="#attempt-2-writing-to-csv-files-blocked-by-environment">Attempt 2: Writing to CSV / Files (blocked by environment)</a></li>
-  <li><a href="#final-approach-use-calendar-as-the-database" id="toc-final-approach-use-calendar-as-the-database" class="nav-link" data-scroll-target="#final-approach-use-calendar-as-the-database">Final approach: Use Calendar as the database</a>
+  <li><a href="#reflections" id="toc-reflections" class="nav-link active" data-scroll-target="#reflections">Reflections</a>
   <ul class="collapse">
-  <li><a href="#why-calendar-works-surprisingly-well" id="toc-why-calendar-works-surprisingly-well" class="nav-link" data-scroll-target="#why-calendar-works-surprisingly-well">Why Calendar works surprisingly well</a></li>
-  <li><a href="#the-shortcuts-idea" id="toc-the-shortcuts-idea" class="nav-link" data-scroll-target="#the-shortcuts-idea">The Shortcuts idea</a></li>
-  </ul></li>
-  <li><a href="#data-export-calendar-.ics-r" id="toc-data-export-calendar-.ics-r" class="nav-link" data-scroll-target="#data-export-calendar-.ics-r">Data export: Calendar → <code>.ics</code> → R</a></li>
-  <li><a href="#analysis-in-r" id="toc-analysis-in-r" class="nav-link" data-scroll-target="#analysis-in-r">Analysis in R</a>
-  <ul class="collapse">
-  <li><a href="#libraries" id="toc-libraries" class="nav-link" data-scroll-target="#libraries">Libraries</a></li>
+  <li><a href="#first-timer-with-shortcuts" id="toc-first-timer-with-shortcuts" class="nav-link" data-scroll-target="#first-timer-with-shortcuts">First-Timer with Shortcuts</a></li>
+  <li><a href="#talking-through-an-idea-really-helps" id="toc-talking-through-an-idea-really-helps" class="nav-link" data-scroll-target="#talking-through-an-idea-really-helps">Talking through an idea really helps</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -178,7 +135,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Building a Reading Time Tracker (Shortcuts → Calendar → RMarkdown)</h1>
+<h1 class="title">Building a Reading Time Tracker [1]</h1>
   <div class="quarto-categories">
     <div class="quarto-category">reading</div>
     <div class="quarto-category">tracking</div>
@@ -190,7 +147,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <div>
   <div class="description">
-    A small experiment: logging reading sessions on IOS devices, exporting Calendar data, and analyzing and reporting it in Rmarkdown.
+    Logging reading sessions on IOS devices, exporting Calendar data, and analyzing and reporting data in Rmarkdown.
   </div>
 </div>
 
@@ -213,111 +170,100 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>I wanted a reading habit tracker that felt <em>easy enough to do daily</em>, worked on my iPhone/watch, and produced data I could analyze later in R. The goal wasn’t a perfect app—it was a lightweight workflow I’d actually use.</p>
-<p>This post documents the path I took, including a few wrong turns, and the final setup that <em>actually stuck</em>.</p>
-<section id="what-i-wanted-constraints-first" class="level2">
-<h2 class="anchored" data-anchor-id="what-i-wanted-constraints-first">What I wanted (constraints first)</h2>
+<p>I’ve been using a Kindle for reading and Goodreads for reviews and logging. But neither gives me the kind of session-level data (or metadata) I want to understand my reading habits over time.</p>
+<p>What I really wanted was a simple tracker that could capture:</p>
 <ul>
-<li>Quick logging from iPhone + Apple Watch</li>
-<li>Track start/end time (so duration is automatic)</li>
-<li>Associate each session with a book title</li>
-<li>Data should be easy to export and analyze in R/RMarkdown</li>
-<li>Low-maintenance: minimal typing, minimal file management</li>
+<li>the date and time of each reading session</li>
+<li>the title of the book I read during that session</li>
 </ul>
-<p>I also wanted to reuse the same approach later for drawing practice (time only).</p>
-<hr>
-</section>
-<section id="attempt-1-writing-logs-to-notes-works-but-messy" class="level2">
-<h2 class="anchored" data-anchor-id="attempt-1-writing-logs-to-notes-works-but-messy">Attempt 1: Writing logs to Notes (works, but messy)</h2>
-<p>My first prototype used Shortcuts to append entries into Apple Notes:</p>
-<p>Book: The Story of a New Name Start at 2025-12-29T18:28:27-05:00 Stop at 2025-12-29T18:28:30-05:00</p>
-<p>This worked… but I quickly hit two friction points:</p>
-<ol type="1">
-<li><strong>Parsing text logs is annoying</strong> (totally doable, but brittle if formatting changes).</li>
-<li><strong>Start vs Stop is hard to “pair” reliably</strong> unless I’m very careful.</li>
-</ol>
-<p>I realized I didn’t actually want to invent a mini database inside Notes.</p>
-<p>So I tried something else.</p>
-<hr>
-</section>
-<section id="attempt-2-writing-to-csv-files-blocked-by-environment" class="level2">
-<h2 class="anchored" data-anchor-id="attempt-2-writing-to-csv-files-blocked-by-environment">Attempt 2: Writing to CSV / Files (blocked by environment)</h2>
-<p>The CSV approach is clean: <code>books.csv</code> for metadata and <code>sessions.csv</code> for time logs. But on my work laptop, iCloud Drive integration wasn’t available, and I didn’t want file path problems to become the project.</p>
-<p>I could have forced it using a different storage location, but the “it must be easy every day” constraint mattered more than elegance.</p>
-<p>So I pivoted again.</p>
-<hr>
-</section>
-<section id="final-approach-use-calendar-as-the-database" class="level2">
-<h2 class="anchored" data-anchor-id="final-approach-use-calendar-as-the-database">Final approach: Use Calendar as the database</h2>
-<p>This ended up being the simplest solution.</p>
-<section id="why-calendar-works-surprisingly-well" class="level3">
-<h3 class="anchored" data-anchor-id="why-calendar-works-surprisingly-well">Why Calendar works surprisingly well</h3>
+<p>After looking into what was already available, I found that popular reading tracker apps (like Bookly and Bookmory) still didn’t fully meet my needs—both in design and in how accessible the data was—unless I paid for a subscription. And since the data I wanted felt fairly minimal, I started wondering: could I build something lightweight that stays local and gives me full control?</p>
+<p>After talking it through with ChatGPT, I decided to try a route that’s already built into the Apple ecosystem: <strong>Shortcuts</strong>, which works across iPhone and Apple Watch.</p>
+<p>This post documents the path I took—complete with a few zigzags—the setup that <em>actually stuck</em>, and the reflections I had along the way.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">## What I wanted (constraints first) My original idea was simple, but the constraints became clearer (and more realistic) as I built and tested the workflow: - <strong>Quick logging from Apple Watch + iPhone</strong> (ideally Watch-first, since I often don’t have my phone nearby while reading—this turned out to be a major constraint early on) - <strong>Start/end timestamps</strong>, so I can calculate duration later - <strong>A book title logged into each session</strong> - <strong>Data that’s easy to export and analyze in R/RMarkdown</strong> - <strong>Low maintenance</strong>: minimal typing, minimal file management (I don’t want tracking to add friction to a hobby) - <strong>Reusable/replicable</strong>: I realized the same approach could later track other hobbies too (like drawing), not just reading</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">## Attempt 1: Shortcut + Notes (works, but messy)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">My first <a href="https://www.icloud.com/shortcuts/d24beb697f5845ae8344ca21f70a261a">prototype</a> used <strong>Shortcuts</strong> to append reading logs into <strong>Apple Notes</strong>. It worked, but Notes has an important limitation in this context: each appended value becomes its own line. That means a single session quickly turns into multiple lines—book title, start time, stop time, plus separators to keep the log readable (and editable if I logged something wrong).</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Below is what the raw data looked like after a few iterations:</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Book: The Story of a New Name Start at 2025-12-29T18:28:27-05:00 Stop at 2025-12-29T18:28:30-05:00</td>
+</tr>
+</tbody>
+</table>
+<p>Book: The Kite Runner Start at 2025-12-29T18:39:24-05:00 Stop at 2025-12-29T18:39:29-05:00 —— Book: The Story of a New Name Start at 2025-12-29T19:28:27-05:00 Stop at 2025-12-29T19:28:30-05:00 ——</p>
+<p>From a data perspective, this wasn’t <em>too</em> bad. If I logged one reading session per day, I’d end up with roughly 365 × 6 = 2,190 lines by the end of the year. In theory, I could copy the note into R and run a parsing script built around this structure.</p>
+<p>Still, my data instincts kept nagging at me: <em>this can’t be the best way.</em> The format felt not only rudimentary but also fragile—easy to break if I ever tweaked the wording, missed a line, or wanted to add one more field later.</p>
+<p>So I kept digging and tried another approach.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">## Attempt 2: Shortcut + Numbers/Excel (not working on Apple Watch)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">## Final approach: Use Calendar as the database</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">While browsing more time-tracking workflows on Reddit, I came across an idea I hadn’t seriously considered: <strong>tracking time by creating Calendar events</strong>. My first reaction was that it felt like an unnecessary extra system. But when I was describing my experiments to my husband, it finally clicked—Calendar could <em>be</em> the database. I already use it extensively, it’s available on Apple Watch, and it stores start/end timestamps natively. Better yet, I could export everything later and analyze it in R.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">This ended up being the simplest solution—while also offers much more than I expected.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">### How it works</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">At a high level, this <a href="https://www.icloud.com/shortcuts/293b167ed3524085ad5915aa1d65d949">shortcut</a> does three things:</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">- <strong>Stores a book list</strong> inside the shortcut (so I can select a title quickly without typing) - <strong>On “Start”</strong>, saves the start timestamp to a small <code>.txt</code> file (stored in the Shortcuts folder on iCloud) - <strong>On “Stop”</strong>, creates a Calendar event using: - <strong>Event title:</strong> the selected book title - <strong>Start time:</strong> retrieved from the saved <code>.txt</code> file - <strong>End time:</strong> the current time when I stop the shortcut</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">### Why it works surprisingly well</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">- Calendar events already contain the two key fields I need: start and end - It’s easy to attach metadata like book title through Shortcuts - Reviewing and correcting sessions is simple—each session is just an editable event in the Calendar - Calendar sync is automatic across devices, including <strong>Apple Watch</strong> (a major constraint solved) - Exporting to <code>.ics</code> is standard and reliable; R has dedicated package to retrieve data from <code>.ics</code> - A dedicated calendar keeps the dataset clean (no mixing with real appointments) - The same approach can be reused for other activities and hobbies (like drawing) with almost no changes</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">What I like most is that it fits naturally into how I already use Calendar. I’m not trying to quantify reading habit as a tool for self-discipline. Instead, I’m more interested in seeing <em>how</em> reading shows up in my life—-when it happens, how consistent or inconsistent it is, and how my reading time spreads across different books and genres. Having sessions appear on my calendar makes reading time more visible, and it gives me a gentle, non-rigid way to notice patterns over time–patterns that will likely help me understand myself a little better in the future.</td>
+</tr>
+</tbody>
+</table>
+<section id="reflections" class="level2">
+<h2 class="anchored" data-anchor-id="reflections">Reflections</h2>
+<p>I will talk about the data export from Calendar and analysis in R in details in the next post. Here, I want to pause and share a few reflections from the process itself – what surprised me, what helped, and what I’d do again.</p>
+<section id="first-timer-with-shortcuts" class="level3">
+<h3 class="anchored" data-anchor-id="first-timer-with-shortcuts">First-Timer with Shortcuts</h3>
+<p>Initially, I went back and forth on whether I should use existing tools to build this time-tracking workflow or take the more ambitious route and try to build an app. The app idea might sound unrealistic for someone without a software engineering background, but I’ve always liked learning new things, and this felt like a good excuse/motive to try. With today’s AI coding tools, the question isn’t really <em>whether</em> it’s possible, but how much time I’d be willing to invest.</p>
+<p>In the end, I chose the first route—using Shortcuts—because I wanted the process to be relatively quick and less demanding. If the project took too long, it would start stealing time from the very thing I was trying to support: reading. Shortcuts felt like a good middle ground: versatile enough to make life easier, but lightweight enough to keep the effort proportional to the goal. I’m still interested in building a small app one day—just not for this project, and not right now.</p>
+<p>At work, I’ve built quite a few automated workflows using tools like Power Automate, AppleScript, and R. So when I first started exploring Shortcuts, I didn’t expect much of a learning curve. I assumed I could follow a set of steps and get a working shortcut quickly.</p>
+<p>That confidence didn’t last long.</p>
+<p>My first attempt failed pretty dramatically, and it took me at least two hours to accept that I needed to step back and look at real examples before I could build something reliable. In hindsight, the learning curve makes sense. It came from a few places:</p>
 <ul>
-<li>Calendar events already have <strong>start</strong> and <strong>end</strong></li>
-<li>Calendar is <strong>synced</strong> across iPhone/watch/mac automatically</li>
-<li>Exporting <code>.ics</code> is standard</li>
-<li>Each event can store the book title in <code>SUMMARY</code></li>
-<li>A dedicated calendar means the data stays clean (no mixing with real meetings)</li>
+<li><strong>The action vocabulary is its own world.</strong> Shortcuts has a specific set of building blocks, and you only get fluent by learning what exists (and what doesn’t).</li>
+<li><strong>Each action has a narrow “shape.”</strong> Compared with tools like Power Automate (not a perfect comparison, but still), Shortcuts can feel more constrained in what each step can do—so you often need extra steps to get to the same result.</li>
+<li><strong>The environment is different.</strong> I’m much more practiced at building automation on a laptop. Designing something that needs to run smoothly on an iPhone—and especially on an Apple Watch—forced me to think differently about interaction, input, and friction.</li>
 </ul>
 </section>
-<section id="the-shortcuts-idea" class="level3">
-<h3 class="anchored" data-anchor-id="the-shortcuts-idea">The Shortcuts idea</h3>
-<ul>
-<li>Shortcut asks me to choose a book (from a list)</li>
-<li>It creates a calendar event that starts now</li>
-<li>The “end” time is set when I stop (either by editing, or via a second shortcut)</li>
-<li>Event title contains the book name (I use a simple prefix like <code>Book1:</code> etc.)</li>
-</ul>
-<p>If you want it even simpler, you can skip book IDs and just use the title.</p>
-<hr>
-</section>
-</section>
-<section id="data-export-calendar-.ics-r" class="level2">
-<h2 class="anchored" data-anchor-id="data-export-calendar-.ics-r">Data export: Calendar → <code>.ics</code> → R</h2>
-<p>At intervals (weekly/monthly), I export the dedicated calendar as an <code>.ics</code> file and bring it into R.</p>
-<p>In the <code>.ics</code>, each event looks roughly like:</p>
-<ul>
-<li><code>DTSTART</code> (start datetime)</li>
-<li><code>DTEND</code> (end datetime)</li>
-<li><code>SUMMARY</code> (book label)</li>
-<li><code>UID</code>, <code>CREATED</code>, etc.</li>
-</ul>
-<p>In R, I convert to a data frame and compute durations.</p>
-<hr>
-</section>
-<section id="analysis-in-r" class="level2">
-<h2 class="anchored" data-anchor-id="analysis-in-r">Analysis in R</h2>
-<section id="libraries" class="level3">
-<h3 class="anchored" data-anchor-id="libraries">Libraries</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'dplyr'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:stats':
-
-    filter, lag</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:base':
-
-    intersect, setdiff, setequal, union</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stringr)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'lubridate'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:base':
-
-    date, intersect, setdiff, union</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
+<section id="talking-through-an-idea-really-helps" class="level3">
+<h3 class="anchored" data-anchor-id="talking-through-an-idea-really-helps">Talking through an idea really helps</h3>
+<p>I still can’t believe the turning point came from a casual after-dinner conversation with my husband. I was explaining why my day felt rough—multiple failed Shortcut attempts—and what I had managed to achieve so far. I mentioned that I’d seen someone use Calendar as the “database” for time tracking. He asked a simple question: <em>how does that work?</em> And that question exposed a gap I hadn’t even noticed—I’d never really tested the Calendar option, and I wasn’t sure whether (or how) I could export all events from a dedicated calendar in a usable way.</p>
+<p>That was the moment the solution clicked.</p>
+<p>The turning point didn’t happen when I asked ChatGPT a hundred questions, and it didn’t happen when I collected more Shortcut examples. It happened when I tried to explain the problem out loud to another person.</p>
+<p>This <strong>learning-by-teaching</strong> idea isn’t new. In fact, it’s a well-studied learning strategy in education research. Studies and reviews show that when learners expect to teach, prepare to teach, or actually teach, they often process material more deeply (sometimes called the <strong>protégé effect</strong>). <a href="https://ui.adsabs.harvard.edu/abs/2009JSEdT..18..334C/abstract">oai_citation:0‡ADS</a> Related approaches are also widely used in teaching practice—especially in STEM—such as <strong>Peer Instruction</strong>, an evidence-based pedagogy with a large research base across disciplines. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4353089/?utm_source=chatgpt.com">oai_citation:1‡PMC</a> A closely related mechanism is <strong>self-explanation</strong>: putting your reasoning into words forces you to organize ideas, surface assumptions, and notice gaps in understanding. <a href="https://www.sciencedirect.com/science/article/pii/0364021394900167">oai_citation:2‡ScienceDirect</a></p>
+<p>In other words, when you try to teach—or even just explain—your thinking, you’re forced to organize it, name the assumptions you’ve been making, and notice what you don’t actually understand yet. Often, the “aha” comes not from new information, but from restructuring what you already know.</p>
+<p>On the other side of the story, my husband was being a really good listener. It reminded me of what good therapists often do: ask the right questions, hold the space, and help people arrive at their own answers.</p>
 
 
 </section>

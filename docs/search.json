@@ -2,9 +2,9 @@
   {
     "objectID": "posts.html",
     "href": "posts.html",
-    "title": "posts",
+    "title": "Posts",
     "section": "",
-    "text": "Building a Reading Time Tracker (Shortcuts → Calendar → RMarkdown)\n\n\n\nreading\n\ntracking\n\nshortcuts\n\nr\n\nrmarkdown\n\n\n\nA small experiment: logging reading sessions on IOS devices, exporting Calendar data, and analyzing and reporting it in Rmarkdown.\n\n\n\n\n\nDec 30, 2025\n\n\n\n\n\nNo matching items"
+    "text": "Building a Reading Time Tracker [1]\n\n\n\nreading\n\ntracking\n\nshortcuts\n\nr\n\nrmarkdown\n\n\n\nLogging reading sessions on IOS devices, exporting Calendar data, and analyzing and reporting data in Rmarkdown.\n\n\n\n\n\nDec 30, 2025\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "index.html",
@@ -14,53 +14,18 @@
     "text": "Kindly Measured is a small collection of things I’ve explored and enjoyed in daily life. I like treating everyday life as something you can observe with both warmth and precision, so I often pair notes and reflections with simple data—time logs, progress trackers, and small experiments. Looking through a data lens helps me notice patterns I might otherwise miss, ask better questions, challenge myself gently, and understand this beautiful yet confusing world a little more clearly."
   },
   {
-    "objectID": "posts/test_posts.html",
-    "href": "posts/test_posts.html",
-    "title": "Building a Reading Time Tracker (Shortcuts → Calendar → RMarkdown)",
+    "objectID": "posts/ReadingTracker20251230.html",
+    "href": "posts/ReadingTracker20251230.html",
+    "title": "Building a Reading Time Tracker [1]",
     "section": "",
-    "text": "I wanted a reading habit tracker that felt easy enough to do daily, worked on my iPhone/watch, and produced data I could analyze later in R. The goal wasn’t a perfect app—it was a lightweight workflow I’d actually use.\nThis post documents the path I took, including a few wrong turns, and the final setup that actually stuck."
+    "text": "I’ve been using a Kindle for reading and Goodreads for reviews and logging. But neither gives me the kind of session-level data (or metadata) I want to understand my reading habits over time.\nWhat I really wanted was a simple tracker that could capture:\nAfter looking into what was already available, I found that popular reading tracker apps (like Bookly and Bookmory) still didn’t fully meet my needs—both in design and in how accessible the data was—unless I paid for a subscription. And since the data I wanted felt fairly minimal, I started wondering: could I build something lightweight that stays local and gives me full control?\nAfter talking it through with ChatGPT, I decided to try a route that’s already built into the Apple ecosystem: Shortcuts, which works across iPhone and Apple Watch.\nThis post documents the path I took—complete with a few zigzags—the setup that actually stuck, and the reflections I had along the way.\nBook: The Kite Runner Start at 2025-12-29T18:39:24-05:00 Stop at 2025-12-29T18:39:29-05:00 —— Book: The Story of a New Name Start at 2025-12-29T19:28:27-05:00 Stop at 2025-12-29T19:28:30-05:00 ——\nFrom a data perspective, this wasn’t too bad. If I logged one reading session per day, I’d end up with roughly 365 × 6 = 2,190 lines by the end of the year. In theory, I could copy the note into R and run a parsing script built around this structure.\nStill, my data instincts kept nagging at me: this can’t be the best way. The format felt not only rudimentary but also fragile—easy to break if I ever tweaked the wording, missed a line, or wanted to add one more field later.\nSo I kept digging and tried another approach."
   },
   {
-    "objectID": "posts/test_posts.html#what-i-wanted-constraints-first",
-    "href": "posts/test_posts.html#what-i-wanted-constraints-first",
-    "title": "Building a Reading Time Tracker (Shortcuts → Calendar → RMarkdown)",
-    "section": "What I wanted (constraints first)",
-    "text": "What I wanted (constraints first)\n\nQuick logging from iPhone + Apple Watch\nTrack start/end time (so duration is automatic)\nAssociate each session with a book title\nData should be easy to export and analyze in R/RMarkdown\nLow-maintenance: minimal typing, minimal file management\n\nI also wanted to reuse the same approach later for drawing practice (time only)."
-  },
-  {
-    "objectID": "posts/test_posts.html#attempt-1-writing-logs-to-notes-works-but-messy",
-    "href": "posts/test_posts.html#attempt-1-writing-logs-to-notes-works-but-messy",
-    "title": "Building a Reading Time Tracker (Shortcuts → Calendar → RMarkdown)",
-    "section": "Attempt 1: Writing logs to Notes (works, but messy)",
-    "text": "Attempt 1: Writing logs to Notes (works, but messy)\nMy first prototype used Shortcuts to append entries into Apple Notes:\nBook: The Story of a New Name Start at 2025-12-29T18:28:27-05:00 Stop at 2025-12-29T18:28:30-05:00\nThis worked… but I quickly hit two friction points:\n\nParsing text logs is annoying (totally doable, but brittle if formatting changes).\nStart vs Stop is hard to “pair” reliably unless I’m very careful.\n\nI realized I didn’t actually want to invent a mini database inside Notes.\nSo I tried something else."
-  },
-  {
-    "objectID": "posts/test_posts.html#attempt-2-writing-to-csv-files-blocked-by-environment",
-    "href": "posts/test_posts.html#attempt-2-writing-to-csv-files-blocked-by-environment",
-    "title": "Building a Reading Time Tracker (Shortcuts → Calendar → RMarkdown)",
-    "section": "Attempt 2: Writing to CSV / Files (blocked by environment)",
-    "text": "Attempt 2: Writing to CSV / Files (blocked by environment)\nThe CSV approach is clean: books.csv for metadata and sessions.csv for time logs. But on my work laptop, iCloud Drive integration wasn’t available, and I didn’t want file path problems to become the project.\nI could have forced it using a different storage location, but the “it must be easy every day” constraint mattered more than elegance.\nSo I pivoted again."
-  },
-  {
-    "objectID": "posts/test_posts.html#final-approach-use-calendar-as-the-database",
-    "href": "posts/test_posts.html#final-approach-use-calendar-as-the-database",
-    "title": "Building a Reading Time Tracker (Shortcuts → Calendar → RMarkdown)",
-    "section": "Final approach: Use Calendar as the database",
-    "text": "Final approach: Use Calendar as the database\nThis ended up being the simplest solution.\n\nWhy Calendar works surprisingly well\n\nCalendar events already have start and end\nCalendar is synced across iPhone/watch/mac automatically\nExporting .ics is standard\nEach event can store the book title in SUMMARY\nA dedicated calendar means the data stays clean (no mixing with real meetings)\n\n\n\nThe Shortcuts idea\n\nShortcut asks me to choose a book (from a list)\nIt creates a calendar event that starts now\nThe “end” time is set when I stop (either by editing, or via a second shortcut)\nEvent title contains the book name (I use a simple prefix like Book1: etc.)\n\nIf you want it even simpler, you can skip book IDs and just use the title."
-  },
-  {
-    "objectID": "posts/test_posts.html#data-export-calendar-.ics-r",
-    "href": "posts/test_posts.html#data-export-calendar-.ics-r",
-    "title": "Building a Reading Time Tracker (Shortcuts → Calendar → RMarkdown)",
-    "section": "Data export: Calendar → .ics → R",
-    "text": "Data export: Calendar → .ics → R\nAt intervals (weekly/monthly), I export the dedicated calendar as an .ics file and bring it into R.\nIn the .ics, each event looks roughly like:\n\nDTSTART (start datetime)\nDTEND (end datetime)\nSUMMARY (book label)\nUID, CREATED, etc.\n\nIn R, I convert to a data frame and compute durations."
-  },
-  {
-    "objectID": "posts/test_posts.html#analysis-in-r",
-    "href": "posts/test_posts.html#analysis-in-r",
-    "title": "Building a Reading Time Tracker (Shortcuts → Calendar → RMarkdown)",
-    "section": "Analysis in R",
-    "text": "Analysis in R\n\nLibraries\n\nlibrary(dplyr)\n\n\nAttaching package: 'dplyr'\n\n\nThe following objects are masked from 'package:stats':\n\n    filter, lag\n\n\nThe following objects are masked from 'package:base':\n\n    intersect, setdiff, setequal, union\n\nlibrary(stringr)\nlibrary(lubridate)\n\n\nAttaching package: 'lubridate'\n\n\nThe following objects are masked from 'package:base':\n\n    date, intersect, setdiff, union\n\nlibrary(ggplot2)"
+    "objectID": "posts/ReadingTracker20251230.html#reflections",
+    "href": "posts/ReadingTracker20251230.html#reflections",
+    "title": "Building a Reading Time Tracker [1]",
+    "section": "Reflections",
+    "text": "Reflections\nI will talk about the data export from Calendar and analysis in R in details in the next post. Here, I want to pause and share a few reflections from the process itself – what surprised me, what helped, and what I’d do again.\n\nFirst-Timer with Shortcuts\nInitially, I went back and forth on whether I should use existing tools to build this time-tracking workflow or take the more ambitious route and try to build an app. The app idea might sound unrealistic for someone without a software engineering background, but I’ve always liked learning new things, and this felt like a good excuse/motive to try. With today’s AI coding tools, the question isn’t really whether it’s possible, but how much time I’d be willing to invest.\nIn the end, I chose the first route—using Shortcuts—because I wanted the process to be relatively quick and less demanding. If the project took too long, it would start stealing time from the very thing I was trying to support: reading. Shortcuts felt like a good middle ground: versatile enough to make life easier, but lightweight enough to keep the effort proportional to the goal. I’m still interested in building a small app one day—just not for this project, and not right now.\nAt work, I’ve built quite a few automated workflows using tools like Power Automate, AppleScript, and R. So when I first started exploring Shortcuts, I didn’t expect much of a learning curve. I assumed I could follow a set of steps and get a working shortcut quickly.\nThat confidence didn’t last long.\nMy first attempt failed pretty dramatically, and it took me at least two hours to accept that I needed to step back and look at real examples before I could build something reliable. In hindsight, the learning curve makes sense. It came from a few places:\n\nThe action vocabulary is its own world. Shortcuts has a specific set of building blocks, and you only get fluent by learning what exists (and what doesn’t).\nEach action has a narrow “shape.” Compared with tools like Power Automate (not a perfect comparison, but still), Shortcuts can feel more constrained in what each step can do—so you often need extra steps to get to the same result.\nThe environment is different. I’m much more practiced at building automation on a laptop. Designing something that needs to run smoothly on an iPhone—and especially on an Apple Watch—forced me to think differently about interaction, input, and friction.\n\n\n\nTalking through an idea really helps\nI still can’t believe the turning point came from a casual after-dinner conversation with my husband. I was explaining why my day felt rough—multiple failed Shortcut attempts—and what I had managed to achieve so far. I mentioned that I’d seen someone use Calendar as the “database” for time tracking. He asked a simple question: how does that work? And that question exposed a gap I hadn’t even noticed—I’d never really tested the Calendar option, and I wasn’t sure whether (or how) I could export all events from a dedicated calendar in a usable way.\nThat was the moment the solution clicked.\nThe turning point didn’t happen when I asked ChatGPT a hundred questions, and it didn’t happen when I collected more Shortcut examples. It happened when I tried to explain the problem out loud to another person.\nThis learning-by-teaching idea isn’t new. In fact, it’s a well-studied learning strategy in education research. Studies and reviews show that when learners expect to teach, prepare to teach, or actually teach, they often process material more deeply (sometimes called the protégé effect). oai_citation:0‡ADS Related approaches are also widely used in teaching practice—especially in STEM—such as Peer Instruction, an evidence-based pedagogy with a large research base across disciplines. oai_citation:1‡PMC A closely related mechanism is self-explanation: putting your reasoning into words forces you to organize ideas, surface assumptions, and notice gaps in understanding. oai_citation:2‡ScienceDirect\nIn other words, when you try to teach—or even just explain—your thinking, you’re forced to organize it, name the assumptions you’ve been making, and notice what you don’t actually understand yet. Often, the “aha” comes not from new information, but from restructuring what you already know.\nOn the other side of the story, my husband was being a really good listener. It reminded me of what good therapists often do: ask the right questions, hold the space, and help people arrive at their own answers."
   },
   {
     "objectID": "about.html",

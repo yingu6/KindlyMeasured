@@ -1,0 +1,159 @@
+---
+title: "Building a Reading Time Tracker [1]"
+date: 2025-12-30
+categories: [reading, tracking, shortcuts, r, rmarkdown]
+description: "Logging reading sessions on IOS devices, exporting Calendar data, and analyzing and reporting data in Rmarkdown."
+---
+
+I’ve been using a Kindle for reading and Goodreads for reviews and logging. But neither gives me the kind of session-level data (or metadata) I want to understand my reading habits over time.
+
+What I really wanted was a simple tracker that could capture:
+
+-   the date and time of each reading session
+-   the title of the book I read during that session
+
+After looking into what was already available, I found that popular reading tracker apps (like Bookly and Bookmory) still didn’t fully meet my needs—both in design and in how accessible the data was—unless I paid for a subscription. And since the data I wanted felt fairly minimal, I started wondering: could I build something lightweight that stays local and gives me full control?
+
+After talking it through with ChatGPT, I decided to try a route that’s already built into the Apple ecosystem: **Shortcuts**, which works across iPhone and Apple Watch.
+
+This post documents the path I took—complete with a few zigzags—the setup that *actually stuck*, and the reflections I had along the way.
+
+
+-----------------------------------------------------------------------
+## What I wanted (constraints first)
+My original idea was simple, but the constraints became clearer (and more realistic) as I built and tested the workflow: 
+- **Quick logging from Apple Watch + iPhone** (ideally Watch-first, since I often don’t have my phone nearby while reading—this turned out to be a major constraint early on) 
+- **Start/end timestamps**, so I can calculate duration later 
+- **A book title logged into each session** 
+- **Data that’s easy to export and analyze in R/RMarkdown** 
+- **Low maintenance**: minimal typing, minimal file management (I don’t want tracking to add friction to a hobby) - **Reusable/replicable**: I realized the same approach could later track other hobbies too (like drawing), not just reading 
+
+-----------------------------------------------------------------------
+## Attempt 1: Shortcut + Notes (works, but messy)
+
+My first [prototype](https://www.icloud.com/shortcuts/d24beb697f5845ae8344ca21f70a261a) used **Shortcuts** to append reading logs into **Apple Notes**. It worked, but Notes has an important limitation in this context: each appended value becomes its own line. That means a single session quickly turns into multiple lines—book title, start time, stop time, plus separators to keep the log readable (and editable if I logged something wrong).
+
+Below is what the raw data looked like after a few iterations:
+
+Book: The Story of a New Name
+Start at
+2025-12-29T18:28:27-05:00
+Stop at
+2025-12-29T18:28:30-05:00
+------
+Book: The Kite Runner
+Start at
+2025-12-29T18:39:24-05:00
+Stop at
+2025-12-29T18:39:29-05:00
+------
+Book: The Story of a New Name
+Start at
+2025-12-29T19:28:27-05:00
+Stop at
+2025-12-29T19:28:30-05:00
+------
+
+
+From a data perspective, this wasn’t *too* bad. If I logged one reading session per day, I’d end up with roughly 365 × 6 = 2,190 lines by the end of the year. In theory, I could copy the note into R and run a parsing script built around this structure.
+
+Still, my data instincts kept nagging at me: *this can’t be the best way.* The format felt not only rudimentary but also fragile—easy to break if I ever tweaked the wording, missed a line, or wanted to add one more field later.
+
+So I kept digging and tried another approach.
+
+
+------------------------------------------------------------------------
+## Attempt 2: Shortcut + Numbers/Excel (not working on Apple Watch)
+
+Next I tried a more “structured data” approach. I found a [Reddit post](https://www.reddit.com/r/shortcuts/comments/1dnxtqe/work_time_tracking_using_automation_on_shortcuts/) that shared a [work time-tracking workflow](https://www.icloud.com/shortcuts/0c47d79424034eb3b421dfe07f5f264b) built with Shortcuts, which logs entries directly into a spreadsheet. I used that idea as a starting point and adapted it for reading.  
+
+Its main difference from the Notes prototype is that **Numbers becomes the database**. Instead of writing raw text that I’d need to parse later, each session becomes a row in a spreadsheet—already structured, readable, and editable.
+
+I was able to quickly modify the shortcut to fit my needs. Here is the updated [shortcut](https://www.icloud.com/shortcuts/49a3d5b36b3a4e769d6e2d46db1db234).
+In the [Numbers file](files/Reading Track.numbers), I used three sheets to collect raw inputs and then clean the data:
+- **Start**: logs the book title + start timestamp  
+- **End**: logs the stop timestamp  
+- **Time Tracking**: uses formulas to join the two logs, cleans up the fields, and calculates duration per session.
+
+### Why this was appealing
+- The data was immediately tidy: rows and columns, no parsing required.
+- It was easy to review and correct mistakes.
+- In theory, I could even do lightweight summaries inside Numbers.
+
+### Why I didn’t stick with it
+This approach mostly worked—but it failed one of my core constraints.
+- **Too much friction on the phone.** Every time I ran the shortcut, Numbers popped open on my iPhone, and I had to manually close it. These two steps are rather redundant.
+- **Dealbreaker: it doesn’t work on Apple Watch.** Numbers isn’t available on Apple Watch, so the shortcut can’t run there. And since I often read without my phone nearby, Watch-first logging wasn’t optional for me.
+
+At this point, I was tempted to fall back to the Notes method—until I found a better alternative.
+
+------------------------------------------------------------------------
+## Final approach: Use Calendar as the database
+
+While browsing more time-tracking workflows on Reddit, I came across an idea I hadn’t seriously considered: **tracking time by creating Calendar events**. My first reaction was that it felt like an unnecessary extra system. But when I was describing my experiments to my husband, it finally clicked—Calendar could *be* the database. I already use it extensively, it’s available on Apple Watch, and it stores start/end timestamps natively. Better yet, I could export everything later and analyze it in R.
+
+This ended up being the simplest solution—while also offers much more than I expected.
+
+### How it works
+
+At a high level, this [shortcut](https://www.icloud.com/shortcuts/293b167ed3524085ad5915aa1d65d949) does three things:
+
+- **Stores a book list** inside the shortcut (so I can select a title quickly without typing)
+- **On “Start”**, saves the start timestamp to a small `.txt` file (stored in the Shortcuts folder on iCloud)
+- **On “Stop”**, creates a Calendar event using:
+  - **Event title:** the selected book title  
+  - **Start time:** retrieved from the saved `.txt` file  
+  - **End time:** the current time when I stop the shortcut 
+
+### Why it works surprisingly well
+
+- Calendar events already contain the two key fields I need: start and end
+- It’s easy to attach metadata like book title through Shortcuts
+- Reviewing and correcting sessions is simple—each session is just an editable event in the Calendar
+- Calendar sync is automatic across devices, including **Apple Watch** (a major constraint solved)
+- Exporting to `.ics` is standard and reliable; R has dedicated package to retrieve data from `.ics`
+- A dedicated calendar keeps the dataset clean (no mixing with real appointments)
+- The same approach can be reused for other activities and hobbies (like drawing) with almost no changes
+
+What I like most is that it fits naturally into how I already use Calendar. I’m not trying to quantify reading habit as a tool for self-discipline. Instead, I’m more interested in seeing *how* reading shows up in my life—-when it happens, how consistent or inconsistent it is, and how my reading time spreads across different books and genres. Having sessions appear on my calendar makes reading time more visible, and it gives me a gentle, non-rigid way to notice patterns over time--patterns that will likely help me understand myself a little better in the future.
+
+
+------------------------------------------------------------------------
+## Reflections
+
+I will talk about the data export from Calendar and analysis in R in details in the next post. Here, I want to pause and share a few reflections from the process itself -- what surprised me, what helped, and what I'd do again.
+
+### First-Timer with Shortcuts
+
+Initially, I went back and forth on whether I should use existing tools to build this time-tracking workflow or take the more ambitious route and try to build an app. The app idea might sound unrealistic for someone without a software engineering background, but I’ve always liked learning new things, and this felt like a good excuse/motive to try. With today’s AI coding tools, the question isn’t really *whether* it’s possible, but how much time I’d be willing to invest.
+
+In the end, I chose the first route—using Shortcuts—because I wanted the process to be relatively quick and less demanding. If the project took too long, it would start stealing time from the very thing I was trying to support: reading. Shortcuts felt like a good middle ground: versatile enough to make life easier, but lightweight enough to keep the effort proportional to the goal. I’m still interested in building a small app one day—just not for this project, and not right now.
+
+At work, I’ve built quite a few automated workflows using tools like Power Automate, AppleScript, and R. So when I first started exploring Shortcuts, I didn’t expect much of a learning curve. I assumed I could follow a set of steps and get a working shortcut quickly.
+
+That confidence didn’t last long.
+
+My first attempt failed pretty dramatically, and it took me at least two hours to accept that I needed to step back and look at real examples before I could build something reliable. In hindsight, the learning curve makes sense. It came from a few places:
+
+- **The action vocabulary is its own world.** Shortcuts has a specific set of building blocks, and you only get fluent by learning what exists (and what doesn’t).
+- **Each action has a narrow “shape.”** Compared with tools like Power Automate (not a perfect comparison, but still), Shortcuts can feel more constrained in what each step can do—so you often need extra steps to get to the same result.
+- **The environment is different.** I’m much more practiced at building automation on a laptop. Designing something that needs to run smoothly on an iPhone—and especially on an Apple Watch—forced me to think differently about interaction, input, and friction.
+
+
+### Talking through an idea really helps
+
+I still can’t believe the turning point came from a casual after-dinner conversation with my husband. I was explaining why my day felt rough—multiple failed Shortcut attempts—and what I had managed to achieve so far. I mentioned that I’d seen someone use Calendar as the “database” for time tracking. He asked a simple question: *how does that work?* And that question exposed a gap I hadn’t even noticed—I’d never really tested the Calendar option, and I wasn’t sure whether (or how) I could export all events from a dedicated calendar in a usable way.
+
+That was the moment the solution clicked.
+
+The turning point didn’t happen when I asked ChatGPT a hundred questions, and it didn’t happen when I collected more Shortcut examples. It happened when I tried to explain the problem out loud to another person.
+
+This **learning-by-teaching** idea isn’t new. In fact, it’s a well-studied learning strategy in education research. Studies and reviews show that when learners expect to teach, prepare to teach, or actually teach, they often process material more deeply (sometimes called the **protégé effect**).  [oai_citation:0‡ADS](https://ui.adsabs.harvard.edu/abs/2009JSEdT..18..334C/abstract) Related approaches are also widely used in teaching practice—especially in STEM—such as **Peer Instruction**, an evidence-based pedagogy with a large research base across disciplines.  [oai_citation:1‡PMC](https://pmc.ncbi.nlm.nih.gov/articles/PMC4353089/?utm_source=chatgpt.com) A closely related mechanism is **self-explanation**: putting your reasoning into words forces you to organize ideas, surface assumptions, and notice gaps in understanding.  [oai_citation:2‡ScienceDirect](https://www.sciencedirect.com/science/article/pii/0364021394900167)
+
+In other words, when you try to teach—or even just explain—your thinking, you’re forced to organize it, name the assumptions you’ve been making, and notice what you don’t actually understand yet. Often, the “aha” comes not from new information, but from restructuring what you already know.
+
+On the other side of the story, my husband was being a really good listener. It reminded me of what good therapists often do: ask the right questions, hold the space, and help people arrive at their own answers.
+
+
+
+

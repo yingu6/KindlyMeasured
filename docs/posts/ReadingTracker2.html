@@ -451,14 +451,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="whats-in-the-.ics-dataset" class="level2">
 <h2 class="anchored" data-anchor-id="whats-in-the-.ics-dataset">What’s in the <code>.ics</code> Dataset</h2>
 <p>Now let’s take a look at what fields the calendar dataset provides.(I’ve created a <a href="data/reading_df.rds">dummy dataset</a> for showcase purposes.)</p>
-<div class="scroll-container" style="overflow-x: auto;white-space: nowrap;">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Show a quick structure preview</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">head</span>(reading_df, <span class="dv">5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(reading_df, <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>                                   uid                       summary
+<pre class="hscroll"><code>                                   uid                       summary
 1 9C8E9A43-EDEF-D832-7083-4A23A1628CD3      Book3: Project Hail Mary
 2 C3122372-3996-DC8D-C0AC-A2DB79FBA943     Book4: The Secret History
 3 695A52D8-00B3-7D86-FF46-CD81A8F2095C        Book2: The Kite Runner
@@ -478,6 +477,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 5 CONFIRMED</code></pre>
 </div>
 </div>
+<div class="cell">
+<style type="text/css">
+.hscroll {
+  overflow-x: auto;
+  white-space: nowrap;
+}
+</style>
 </div>
 <p>Below is a quick summary of the fields.</p>
 <ul>

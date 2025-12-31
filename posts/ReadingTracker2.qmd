@@ -153,9 +153,9 @@ file.info("data/reading_dummy.rds")[, c("size", "mtime")]
 reading_df <- readRDS(here::here("data", "reading_df.rds"))
 ```
 
-I've created a dummy dataset for showcase purposes. Now let's take a look at what fields the calendar dataset provides.
+Now let's take a look at what fields the calendar dataset provides.(I've created a [dummy dataset](data/reading_df.rds) for showcase purposes.)
 
-::: {.scroll-container style="overflow-x: scroll;white-space: nowrap;"}
+::: {.scroll-container style="overflow-x: auto;white-space: nowrap;"}
 
 ```{r showdata, echo=TRUE}
 

@@ -215,21 +215,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div class="cell">
-<style type="text/css">
-/* horizontal scroll container */
-.hscroll {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* keep the code from wrapping so it scrolls */
-.hscroll pre, .hscroll code {
-  white-space: pre;
-}
-
-</style>
-</div>
 <p>In this post, I’ll explore the data from the Reading Time Tracker I built in the previous post—specifically, how to export the calendar logs as an <code>.ics</code> file, import them into R, and do the analysis.</p>
 <section id="exporting-.ics-from-calendar" class="level2">
 <h2 class="anchored" data-anchor-id="exporting-.ics-from-calendar">Exporting <code>.ics</code> from Calendar</h2>
@@ -298,19 +283,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="whats-in-the-.ics-dataset" class="level2">
 <h2 class="anchored" data-anchor-id="whats-in-the-.ics-dataset">What’s in the <code>.ics</code> Dataset</h2>
 <p>I’ve created a dummy dataset for showcase purposes. Now let’s take a look at what fields the calendar dataset provides.</p>
+<div class="scroll-container" style="overflow-y: scroll;height: 400px;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#| class: hscroll</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Show a quick structure preview</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Show a quick structure preview</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n\n</span><span class="st">Preview (first rows):</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-
-Preview (first rows):</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">head</span>(reading_df, <span class="dv">5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">head</span>(reading_df, <span class="dv">5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                                   uid                       summary
 1 9C8E9A43-EDEF-D832-7083-4A23A1628CD3      Book3: Project Hail Mary
@@ -330,6 +308,7 @@ Preview (first rows):</code></pre>
 3 CONFIRMED
 4 CONFIRMED
 5 CONFIRMED</code></pre>
+</div>
 </div>
 </div>
 <p>Below is a quick summary of the fields.</p>

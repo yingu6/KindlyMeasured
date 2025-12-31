@@ -5,21 +5,6 @@ categories: [reading, tracking, shortcuts, calendar, r, rmarkdown]
 description: "Logging reading sessions on IOS devices, exporting Calendar data, and analyzing and reporting data in Rmarkdown."
 ---
 
-```{css, echo=FALSE}
-/* horizontal scroll container */
-.hscroll {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* keep the code from wrapping so it scrolls */
-.hscroll pre, .hscroll code {
-  white-space: pre;
-}
-
-```
-
-
 In this post, I’ll explore the data from the Reading Time Tracker I built in the previous post—specifically, how to export the calendar logs as an `.ics` file, import them into R, and do the analysis. 
 
 ## Exporting `.ics` from Calendar
@@ -170,17 +155,18 @@ reading_df <- readRDS(here::here("data", "reading_df.rds"))
 
 I've created a dummy dataset for showcase purposes. Now let's take a look at what fields the calendar dataset provides.
 
-```{r showdata, echo=TRUE}
+::: {.scroll-container style="overflow-y: scroll;height: 400px;"}
 
-#| class: hscroll
+```{r showdata, echo=TRUE}
 
 #####
 # Show a quick structure preview
 #####
-cat("\n\nPreview (first rows):\n")
 print(head(reading_df, 5))
 
 ```
+
+::: 
 
 Below is a quick summary of the fields.
 

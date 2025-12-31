@@ -29,3 +29,16 @@ format:
 
 editor: visual
 
+# babelquarto:
+#   languagecodes:
+#   - name: zh
+#     text: "汉"
+#   - name: en
+#     text: "EN"
+#   mainlanguage: 'en'
+#   languages: ['zh']
+# title-zh: 微光成纹
+# description-zh: 测试
+# author-zh: Yin Gu
+# lang: en
+

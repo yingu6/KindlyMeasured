@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2025-12-30">
+<meta name="dcterms.date" content="2025-12-31">
 <meta name="description" content="Logging reading sessions on IOS devices, exporting Calendar data, and analyzing and reporting data in Rmarkdown.">
 
 <title>Building a Reading Time Tracker [2] – Kindly Measured</title>
@@ -21,6 +21,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -117,8 +152,27 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#exporting-.ics-from-calendar" id="toc-exporting-.ics-from-calendar" class="nav-link active" data-scroll-target="#exporting-.ics-from-calendar">Exporting <code>.ics</code> from Calendar</a>
+  <ul class="collapse">
+  <li><a href="#exporting-from-apple-calendar" id="toc-exporting-from-apple-calendar" class="nav-link" data-scroll-target="#exporting-from-apple-calendar">Exporting from Apple Calendar</a></li>
+  <li><a href="#export-from-google-calendar" id="toc-export-from-google-calendar" class="nav-link" data-scroll-target="#export-from-google-calendar">Export from Google Calendar</a></li>
+  <li><a href="#a-small-quirk-apple-vs.-google-.ics-data" id="toc-a-small-quirk-apple-vs.-google-.ics-data" class="nav-link" data-scroll-target="#a-small-quirk-apple-vs.-google-.ics-data">A small quirk: Apple vs.&nbsp;Google <code>.ics</code> data</a></li>
+  </ul></li>
+  <li><a href="#importing-.ics-into-r" id="toc-importing-.ics-into-r" class="nav-link" data-scroll-target="#importing-.ics-into-r">Importing <code>.ics</code> into R</a></li>
+  <li><a href="#whats-in-the-.ics-dataset" id="toc-whats-in-the-.ics-dataset" class="nav-link" data-scroll-target="#whats-in-the-.ics-dataset">What’s in the <code>.ics</code> Dataset</a></li>
+  <li><a href="#hypotheses-to-explore-what-im-curious-about" id="toc-hypotheses-to-explore-what-im-curious-about" class="nav-link" data-scroll-target="#hypotheses-to-explore-what-im-curious-about">Hypotheses to Explore (What I’m Curious About)</a>
+  <ul class="collapse">
+  <li><a href="#when-do-i-read" id="toc-when-do-i-read" class="nav-link" data-scroll-target="#when-do-i-read">When do I read?</a></li>
+  <li><a href="#how-do-i-move-through-books" id="toc-how-do-i-move-through-books" class="nav-link" data-scroll-target="#how-do-i-move-through-books">How do I move through books?</a></li>
+  <li><a href="#what-predicts-momentum" id="toc-what-predicts-momentum" class="nav-link" data-scroll-target="#what-predicts-momentum">What predicts momentum?</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -149,7 +203,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">December 30, 2025</p>
+      <p class="date">December 31, 2025</p>
     </div>
   </div>
   
@@ -161,8 +215,194 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<div class="cell">
+<style type="text/css">
+/* horizontal scroll container */
+.hscroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* keep the code from wrapping so it scrolls */
+.hscroll pre, .hscroll code {
+  white-space: pre;
+}
+
+</style>
+</div>
+<p>In this post, I’ll explore the data from the Reading Time Tracker I built in the previous post—specifically, how to export the calendar logs as an <code>.ics</code> file, import them into R, and do the analysis.</p>
+<section id="exporting-.ics-from-calendar" class="level2">
+<h2 class="anchored" data-anchor-id="exporting-.ics-from-calendar">Exporting <code>.ics</code> from Calendar</h2>
+<p>I use <strong>Google Calendar</strong> as my main calendar, and I’ve imported it into <strong>Apple Calendar</strong> so my Google calendars are available inside <strong>Shortcuts</strong> (via Apple’s Calendar integration). For the reading tracker, I created a dedicated calendar called <strong>Reading2026</strong>, which the shortcut uses to store each reading session as an event.</p>
+<p>In this section, I’ll walk through exporting the <code>.ics</code> file from both Apple Calendar and Google Calendar, and briefly explain why I ended up using the Google export for the analysis that follows.</p>
+<section id="exporting-from-apple-calendar" class="level3">
+<h3 class="anchored" data-anchor-id="exporting-from-apple-calendar">Exporting from Apple Calendar</h3>
+<p>Both Apple Calendar and Google Calendar let you export an entire calendar. In Apple Calendar, the exact UI varies slightly by macOS version, but the workflow is roughly the same:</p>
+<ol type="1">
+<li>Open the <strong>Calendar</strong> app on your Mac<br>
+</li>
+<li>In the left sidebar, find and select the dedicated calendar (e.g., <strong>Reading2026</strong>)<br>
+</li>
+<li>Use the top menu: <strong>File → Export → Export…</strong> to save that calendar as an <code>.ics</code> file</li>
+</ol>
+</section>
+<section id="export-from-google-calendar" class="level3">
+<h3 class="anchored" data-anchor-id="export-from-google-calendar">Export from Google Calendar</h3>
+<p>Exporting an <code>.ics</code> file from Google Calendar is also straightforward:</p>
+<ol type="1">
+<li>Open <strong>Google Calendar</strong> in a browser<br>
+</li>
+<li>In the left sidebar, hover over the calendar (e.g., <strong>Reading2026</strong>), click the <strong>⋮</strong> menu (or right-click) and choose <strong>Settings and sharing</strong><br>
+</li>
+<li>Scroll to <strong>Export calendar</strong> and download the <code>.ics</code> file</li>
+</ol>
+</section>
+<section id="a-small-quirk-apple-vs.-google-.ics-data" class="level3">
+<h3 class="anchored" data-anchor-id="a-small-quirk-apple-vs.-google-.ics-data">A small quirk: Apple vs.&nbsp;Google <code>.ics</code> data</h3>
+<p>After importing both <code>.ics</code> files into R, I noticed that the Apple Calendar <code>.ics</code> sometimes includes extra rows/fields that are harder to parse cleanly and can introduce edge-case issues. I looked into this issue briefly but couldn’t find any documentation or discussions that explain what might have led to this issue.</p>
+<p>In comparison, the Google Calendar data is cleaner. To keep the project moving, I’ll use the <strong>Google Calendar</strong> <code>.ics</code> file as the example dataset for the importing and analysis steps in the rest of this post.</p>
+</section>
+</section>
+<section id="importing-.ics-into-r" class="level2">
+<h2 class="anchored" data-anchor-id="importing-.ics-into-r">Importing <code>.ics</code> into R</h2>
+<p>Once you have an <code>.ics</code> file, the next step is turning it into a dataframe.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#Load the packages needed for retreiving the data</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Install the packages if they aren't yet</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>pkgs <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"ical"</span>, <span class="st">"dplyr"</span>, <span class="st">"tibble"</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>missing <span class="ot">&lt;-</span> pkgs[<span class="sc">!</span>pkgs <span class="sc">%in%</span> <span class="fu">rownames</span>(<span class="fu">installed.packages</span>())]</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(missing) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(missing, <span class="at">dependencies =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">lapply</span>(pkgs, library, <span class="at">character.only =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Point to .ics file </span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>ics_path <span class="ot">&lt;-</span> <span class="st">"ENTER YOUR ICS FILE PATH HERE"</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Read .ics (VEVENT entries)</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>ics_raw <span class="ot">&lt;-</span> <span class="fu">ical_parse_df</span>(ics_path)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Make it a tibble for nicer printing</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>reading_df <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(ics_raw)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="whats-in-the-.ics-dataset" class="level2">
+<h2 class="anchored" data-anchor-id="whats-in-the-.ics-dataset">What’s in the <code>.ics</code> Dataset</h2>
+<p>I’ve created a dummy dataset for showcase purposes. Now let’s take a look at what fields the calendar dataset provides.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#| class: hscroll</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Show a quick structure preview</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n\n</span><span class="st">Preview (first rows):</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+
+Preview (first rows):</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">head</span>(reading_df, <span class="dv">5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                   uid                       summary
+1 9C8E9A43-EDEF-D832-7083-4A23A1628CD3      Book3: Project Hail Mary
+2 C3122372-3996-DC8D-C0AC-A2DB79FBA943     Book4: The Secret History
+3 695A52D8-00B3-7D86-FF46-CD81A8F2095C        Book2: The Kite Runner
+4 4AFA90C7-C9D4-754D-A4FD-B8F1C3CA23AB Book5: Guns, Germs, and Steel
+5 C490962D-97B1-59E4-7BE9-50B6C8DB16FB     Book4: The Secret History
+                start                 end description       last.modified
+1 2025-01-01 08:05:27 2025-01-01 08:23:27          NA 2025-01-01 08:27:03
+2 2025-01-01 18:05:11 2025-01-01 19:44:11          NA 2025-01-01 19:49:19
+3 2025-01-01 19:44:49 2025-01-01 20:20:49          NA 2025-01-01 20:27:12
+4 2025-01-02 01:53:42 2025-01-02 03:21:42          NA 2025-01-02 03:24:40
+5 2025-01-02 16:33:35 2025-01-02 17:58:35          NA 2025-01-02 18:00:58
+     status
+1 CONFIRMED
+2 CONFIRMED
+3 CONFIRMED
+4 CONFIRMED
+5 CONFIRMED</code></pre>
+</div>
+</div>
+<p>Below is a quick summary of the fields.</p>
+<ul>
+<li><code>uid</code> is the unique identifier the calendar application assigns to each event</li>
+<li><code>summary</code> comes from the event title. Since I use the title to store the book name, this field effectively contains the book titles.<br>
+</li>
+<li><code>start</code>is the start timestamp of the event.<br>
+</li>
+<li><code>end</code>is the end timestamp of the event.<br>
+</li>
+<li><code>description</code> is the event description. I haven’t utilized this field yet, but I may use it later to log reading progress (e.g., page/percentage).<br>
+</li>
+<li><code>last.modified</code>is the timestamp of the most recent edit to the event. Because there can be a small delay between tapping “Stop” in Shortcuts and the event being written into the calendar, this value often reflects when the event was created/saved (not necessarily the exact end time).<br>
+</li>
+<li><code>status</code> indicates event status. Common values include <code>CONFIRMED</code>, <code>TENTATIVE</code>, <code>CANCELLED</code>. In my workflow, events created via Shortcuts show up as <code>CONFIRMED</code>.</li>
+</ul>
+</section>
+<section id="hypotheses-to-explore-what-im-curious-about" class="level2">
+<h2 class="anchored" data-anchor-id="hypotheses-to-explore-what-im-curious-about">Hypotheses to Explore (What I’m Curious About)</h2>
+<p>Now that I understand what fields the calendar export provides, the next step is deciding what I want to learn—and what additional data (if any) would make the analysis more meaningful.</p>
+<p>Below is a list of questions I’m interested in answering. Most of them come with implicit assumptions about my reading habits. By collecting my own data and analyse them, I can see which assumptions hold up and which don’t. I also hope to find a few patterns that I didn’t anticipate. That’s what I enjoy the most about a data-driven approach: it can surface patterns I wouldn’t notice otherwise, and it helps me check my own biases with something more concrete than memory.</p>
+<p>As I worked through these questions, I also realized I’ll need a bit more data to answer them well:</p>
+<ul>
+<li><strong>Reading progress:</strong> I’ll likely add a simple progress field to the tracker (e.g., percentage or pages) so I can study completion and drop-off points.</li>
+<li><strong>Book metadata:</strong> I’ll pull basic metadata (e.g., genre, length/word count) from another source. I will document that process in a separate post.</li>
+</ul>
+<section id="when-do-i-read" class="level3">
+<h3 class="anchored" data-anchor-id="when-do-i-read">When do I read?</h3>
+<p>First, I want to know some basic, time-related stats.</p>
+<ol type="1">
+<li><strong>Consistency:</strong> Do I read regularly, or in bursts?</li>
+<li><strong>Timing:</strong> What times of day does reading naturally happen?</li>
+<li><strong>Weekday vs weekend:</strong> Does reading cluster on certain days?</li>
+<li><strong>Seasonality:</strong> Are there any month-to-month (or seasonal) shifts?</li>
+</ol>
+</section>
+<section id="how-do-i-move-through-books" class="level3">
+<h3 class="anchored" data-anchor-id="how-do-i-move-through-books">How do I move through books?</h3>
+<p>These focus on how I move through books. Some of these require basic book metadata (e.g., genre, length), which I’ll add later.</p>
+<section id="for-books-i-finish" class="level4">
+<h4 class="anchored" data-anchor-id="for-books-i-finish">For books I finish</h4>
+<ol type="1">
+<li><strong>Book overview:</strong> How many books did I read, what genres were they, and how long did each one take?</li>
+<li><strong>Focus vs.&nbsp;switching:</strong> Do I tend to read one book at a time, or bounce between several?</li>
+<li><strong>Pace by book:</strong> How long does it typically take me to finish a book (total hours and number of sessions)?</li>
+<li><strong>Engagement pattern:</strong> Which books show many short sessions vs.&nbsp;fewer long sessions?</li>
+<li><strong>Switching behavior:</strong> If I switch books mid-stream, is it random—or does it happen after long gaps, short sessions, or late-night reading?</li>
+<li><strong>Genre differences:</strong> Do I read certain genres at different times of day or in different session lengths?</li>
+</ol>
+</section>
+<section id="for-books-i-dont-finish" class="level4">
+<h4 class="anchored" data-anchor-id="for-books-i-dont-finish">For books I don’t finish</h4>
+<ol type="1">
+<li><strong>Abandonment point:</strong> How far do I typically get before stopping?</li>
+<li><strong>The “fade-out” signal:</strong> Do unfinished books show a common pattern before I drop them (shrinking session length, longer gaps, switching to other books)?</li>
+</ol>
+</section>
+</section>
+<section id="what-predicts-momentum" class="level3">
+<h3 class="anchored" data-anchor-id="what-predicts-momentum">What predicts momentum?</h3>
+<ol type="1">
+<li><strong>What predicts “stickiness”:</strong> What factors correlate with steady progress—time of day, session length, weekday/weekend, or genre?</li>
+<li><strong>Completion likelihood:</strong> Are some genres more likely to be finished vs.&nbsp;abandoned?</li>
+</ol>
+<hr>
+<p>
+This work is licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> <img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="CC" style="max-width: 1em;max-height:1em;margin-left: .2em;"> <img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt="BY" style="max-width: 1em;max-height:1em;margin-left: .2em;"> <img src="https://mirrors.creativecommons.org/presskit/icons/sa.svg" alt="SA" style="max-width: 1em;max-height:1em;margin-left: .2em;">
+</p>
 
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

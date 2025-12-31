@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://yingu6.github.io/KindlyMeasured/codes/documentation.html</loc>
+    <lastmod>2025-12-31T16:45:14.003Z</lastmod>
+  </url>
+  <url>
     <loc>https://yingu6.github.io/KindlyMeasured/posts.html</loc>
     <lastmod>2025-12-30T23:02:43.591Z</lastmod>
   </url>
   <url>
     <loc>https://yingu6.github.io/KindlyMeasured/index.html</loc>
-    <lastmod>2025-12-30T23:02:47.522Z</lastmod>
+    <lastmod>2025-12-31T18:26:42.528Z</lastmod>
   </url>
   <url>
     <loc>https://yingu6.github.io/KindlyMeasured/posts/Website.html</loc>
@@ -14,14 +18,18 @@
   </url>
   <url>
     <loc>https://yingu6.github.io/KindlyMeasured/posts/ReadingTracker2.html</loc>
-    <lastmod>2025-12-30T22:57:25.624Z</lastmod>
+    <lastmod>2025-12-31T19:26:53.835Z</lastmod>
   </url>
   <url>
     <loc>https://yingu6.github.io/KindlyMeasured/posts/ReadingTracker1.html</loc>
-    <lastmod>2025-12-30T23:03:25.492Z</lastmod>
+    <lastmod>2025-12-31T19:26:37.384Z</lastmod>
   </url>
   <url>
     <loc>https://yingu6.github.io/KindlyMeasured/about.html</loc>
     <lastmod>2025-12-30T23:02:33.472Z</lastmod>
+  </url>
+  <url>
+    <loc>https://yingu6.github.io/KindlyMeasured/codes/multilanguage setup.html</loc>
+    <lastmod>2025-12-31T13:41:31.201Z</lastmod>
   </url>
 </urlset>

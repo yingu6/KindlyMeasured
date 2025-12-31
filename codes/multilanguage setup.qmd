@@ -1,0 +1,22 @@
+---
+title: "multilanguage setup"
+format: html
+---
+<!-- https://joelnitta.com/posts/2024-12-06_babelquarto/ -->
+
+
+library(quarto)
+library(babelquarto)
+library(fs)
+
+website_dir <- path("/Users/yg5ca/", "MyWebsite")
+dir_tree(website_dir)
+
+
+<!-- https://docs.ropensci.org/babelquarto/reference/register_main_language.html -->
+register_main_language(
+  main_language = "en",
+  project_path = website_dir
+)
+
+register_further_languages(c("zh"), website_dir)

@@ -5,6 +5,7 @@ categories: [reading, tracking, shortcuts, calendar, r, rmarkdown]
 description: "Logging reading sessions on IOS devices, exporting Calendar data, and analyzing and reporting data in Rmarkdown."
 bibliography: references.bib
 csl: apa.csl
+body-footer: 
 ---
 
 I’ve been using a Kindle for reading and Goodreads for reviews and logging. But neither gives me the kind of session-level data (or metadata) I want to understand my reading habits over time.
@@ -150,3 +151,7 @@ This **learning-by-teaching** idea isn’t new—it’s a well-studied learning 
 In other words, when you try to teach—or even just explain—your thinking, you’re forced to organize it, name the assumptions you’ve been making, and notice what you don’t actually understand yet. Often, the “aha” comes not from new information, but from restructuring what you already know.
 
 On the other side of the story, my husband was being a really good listener. It reminded me of what good therapists often do: ask the right questions, hold the space, and help people arrive at their own answers.
+
+<hr>
+
+<p>This work is licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> <img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="CC" style="max-width: 1em;max-height:1em;margin-left: .2em;"/> <img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt="BY" style="max-width: 1em;max-height:1em;margin-left: .2em;"/> <img src="https://mirrors.creativecommons.org/presskit/icons/sa.svg" alt="SA" style="max-width: 1em;max-height:1em;margin-left: .2em;"/></p>

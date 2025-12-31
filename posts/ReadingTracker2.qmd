@@ -155,7 +155,7 @@ reading_df <- readRDS(here::here("data", "reading_df.rds"))
 
 I've created a dummy dataset for showcase purposes. Now let's take a look at what fields the calendar dataset provides.
 
-::: {.scroll-container style="overflow-x: scroll;"}
+::: {.scroll-container style="overflow-x: scroll;white-space: nowrap;"}
 
 ```{r showdata, echo=TRUE}
 

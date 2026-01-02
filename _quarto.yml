@@ -23,6 +23,8 @@ website:
 
 format:
   html:
+    code-block-bg: "#f2f2f2" # Set background color
+    # code-block-border-left: "#737373" # Optional: set a border color
     theme:
       light: sketchy
       dark: superhero

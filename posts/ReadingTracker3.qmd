@@ -1,0 +1,55 @@
+---
+title: "Kindly Measured Reading [3/3]: The Patterns"
+date: 2025-12-31
+categories: [reading, tracking, shortcuts, calendar, r, rmarkdown]
+description: "Turning reading logs into insights -- data cleaning and visualizations in Rmarkdown"
+---
+
+
+## Hypotheses to Explore (What I’m Curious About)
+
+Now that I reviewed what data are available to me, the next step is deciding what I want to learn—and what additional data (if any) would make the analysis more meaningful.
+
+Below is a list of questions I’m interested in answering. Most of them come with implicit assumptions about my reading habits. By collecting my own data and analyse them, I can see which assumptions hold up and which don't. I also hope to find a few patterns that I didn't anticipate. That’s what I enjoy the most about a data-driven approach: it can surface patterns I wouldn’t notice otherwise, and it helps me check my own biases with something more concrete than memory.
+
+### When do I read?
+
+First, I want to know some basic, time-related stats. 
+
+1. **Consistency:** Do I read regularly, or in bursts?
+2. **Timing:** What times of day does reading naturally happen?
+3. **Weekday vs weekend:** Does reading cluster on certain days?
+4. **Seasonality:** Are there any month-to-month (or seasonal) shifts? 
+
+### How do I move through books?
+
+These focus on how I move through books. Some of these require basic book metadata (e.g., genre, length), which I’ll add later.
+
+#### For books I finish
+
+1. **Book overview:** How many books did I read, what genres were they, and how long did each one take?
+2. **Focus vs. switching:** Do I tend to read one book at a time, or bounce between several?
+3. **Pace by book:** How long does it typically take me to finish a book (total hours and number of sessions)?
+4. **Engagement pattern:** Which books show many short sessions vs. fewer long sessions?
+5. **Switching behavior:** If I switch books mid-stream, is it random—or does it happen after long gaps, short sessions, or late-night reading?
+6. **Genre differences:** Do I read certain genres at different times of day or in different session lengths?
+
+#### For books I don't finish
+
+1. **Abandonment point:** How far do I typically get before stopping? 
+2. **The “fade-out” signal:** Do unfinished books show a common pattern before I drop them (shrinking session length, longer gaps, switching to other books)?
+
+### What predicts momentum?
+
+1. **What predicts “stickiness":** What factors correlate with steady progress—time of day, session length, weekday/weekend, or genre?
+2. **Completion likelihood:** Are some genres more likely to be finished vs. abandoned?
+
+
+
+
+
+<hr>
+
+<p>This work is licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> <img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="CC" style="max-width: 1em;max-height:1em;margin-left: .2em;"/> <img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt="BY" style="max-width: 1em;max-height:1em;margin-left: .2em;"/> <img src="https://mirrors.creativecommons.org/presskit/icons/sa.svg" alt="SA" style="max-width: 1em;max-height:1em;margin-left: .2em;"/></p>
+
+

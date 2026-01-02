@@ -1,11 +1,10 @@
 ---
-title: "Building a Reading Time Tracker [1]"
+title: "Kindly Measured Reading [1/3]: The Time Tracker"
 date: 2025-12-30
-categories: [reading, tracking, shortcuts, calendar, r, rmarkdown]
-description: "Logging reading sessions on IOS devices, exporting Calendar data, and analyzing and reporting data in Rmarkdown."
+categories: [reading, tracking, shortcuts, calendar, ios]
+description: "Why I built a reading time tracker, the zigzags along the way, and the Shortcuts setup that finally stuck"
 bibliography: references.bib
 csl: apa.csl
-body-footer: 
 ---
 
 I’ve been using a Kindle for reading and Goodreads for reviews and logging. But neither gives me the kind of session-level data (or metadata) I want to understand my reading habits over time.

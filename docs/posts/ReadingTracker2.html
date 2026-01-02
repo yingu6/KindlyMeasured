@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="dcterms.date" content="2025-12-31">
-<meta name="description" content="Logging reading sessions on IOS devices, exporting Calendar data, and analyzing and reporting data in Rmarkdown.">
+<meta name="description" content="From .ics and Goodreads CSV to a clean dataset – what’s included, what’s missing, and how I join them">
 
-<title>Building a Reading Time Tracker [2] – Kindly Measured</title>
+<title>Kindly Measured Reading [2/3]: The Data – Kindly Measured</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -79,9 +79,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-57d5c1abf1faeb89ba076228a94f9143.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-c1df456a4ff80d8bd23f98e2d1c6f7b2.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-57d5c1abf1faeb89ba076228a94f9143.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-ad990f474b20aa6d6c2788181d1a6a3b.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-3fb9eac868718f14af97f5aa7bcaf007.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-ad990f474b20aa6d6c2788181d1a6a3b.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -112,8 +112,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <link rel="stylesheet" href="../styles.css">
-<meta property="og:title" content="Building a Reading Time Tracker [2] – Kindly Measured">
-<meta property="og:description" content="Logging reading sessions on IOS devices, exporting Calendar data, and analyzing and reporting data in Rmarkdown.">
+<meta property="og:title" content="Kindly Measured Reading [2/3]: The Data – Kindly Measured">
+<meta property="og:description" content="From .ics and Goodreads CSV to a clean dataset – what’s included, what’s missing, and how I join them">
 <meta property="og:site_name" content="Kindly Measured">
 </head>
 
@@ -331,12 +331,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#a-small-quirk-apple-vs.-google-.ics-data" id="toc-a-small-quirk-apple-vs.-google-.ics-data" class="nav-link" data-scroll-target="#a-small-quirk-apple-vs.-google-.ics-data">A small quirk: Apple vs.&nbsp;Google <code>.ics</code> data</a></li>
   </ul></li>
   <li><a href="#importing-.ics-into-r" id="toc-importing-.ics-into-r" class="nav-link" data-scroll-target="#importing-.ics-into-r">Importing <code>.ics</code> into R</a></li>
-  <li><a href="#whats-in-the-.ics-dataset" id="toc-whats-in-the-.ics-dataset" class="nav-link" data-scroll-target="#whats-in-the-.ics-dataset">What’s in the <code>.ics</code> Dataset</a></li>
-  <li><a href="#hypotheses-to-explore-what-im-curious-about" id="toc-hypotheses-to-explore-what-im-curious-about" class="nav-link" data-scroll-target="#hypotheses-to-explore-what-im-curious-about">Hypotheses to Explore (What I’m Curious About)</a>
+  <li><a href="#whats-in-the-calendar-dataset" id="toc-whats-in-the-calendar-dataset" class="nav-link" data-scroll-target="#whats-in-the-calendar-dataset">What’s in the Calendar Dataset</a></li>
+  <li><a href="#exporting-library-data-.csv-from-goodreads" id="toc-exporting-library-data-.csv-from-goodreads" class="nav-link" data-scroll-target="#exporting-library-data-.csv-from-goodreads">Exporting Library Data (<code>.csv</code>) from Goodreads</a></li>
+  <li><a href="#importing-library-data-into-r" id="toc-importing-library-data-into-r" class="nav-link" data-scroll-target="#importing-library-data-into-r">Importing Library Data into R</a></li>
+  <li><a href="#whats-in-the-goodreads-dataset" id="toc-whats-in-the-goodreads-dataset" class="nav-link" data-scroll-target="#whats-in-the-goodreads-dataset">What’s in the Goodreads Dataset</a></li>
+  <li><a href="#cleaning-the-goodreads-dataset---prep-work" id="toc-cleaning-the-goodreads-dataset---prep-work" class="nav-link" data-scroll-target="#cleaning-the-goodreads-dataset---prep-work">Cleaning the Goodreads Dataset - Prep work</a>
   <ul class="collapse">
-  <li><a href="#when-do-i-read" id="toc-when-do-i-read" class="nav-link" data-scroll-target="#when-do-i-read">When do I read?</a></li>
-  <li><a href="#how-do-i-move-through-books" id="toc-how-do-i-move-through-books" class="nav-link" data-scroll-target="#how-do-i-move-through-books">How do I move through books?</a></li>
-  <li><a href="#what-predicts-momentum" id="toc-what-predicts-momentum" class="nav-link" data-scroll-target="#what-predicts-momentum">What predicts momentum?</a></li>
+  <li><a href="#clean-book-titles-into-a-consistent-format" id="toc-clean-book-titles-into-a-consistent-format" class="nav-link" data-scroll-target="#clean-book-titles-into-a-consistent-format">Clean book titles into a consistent format</a></li>
+  <li><a href="#spot-duplicates-in-the-goodreads-dataset" id="toc-spot-duplicates-in-the-goodreads-dataset" class="nav-link" data-scroll-target="#spot-duplicates-in-the-goodreads-dataset">Spot duplicates in the Goodreads Dataset</a></li>
+  </ul></li>
+  <li><a href="#merge-calendar-and-goodreads-datasets" id="toc-merge-calendar-and-goodreads-datasets" class="nav-link" data-scroll-target="#merge-calendar-and-goodreads-datasets">Merge Calendar and Goodreads Datasets</a>
+  <ul class="collapse">
+  <li><a href="#match-calendar-book-names-to-goodreads-titles" id="toc-match-calendar-book-names-to-goodreads-titles" class="nav-link" data-scroll-target="#match-calendar-book-names-to-goodreads-titles">Match calendar book names to Goodreads titles</a></li>
+  <li><a href="#merge-the-calendar-and-goodreads-datasets" id="toc-merge-the-calendar-and-goodreads-datasets" class="nav-link" data-scroll-target="#merge-the-calendar-and-goodreads-datasets">Merge the Calendar and Goodreads datasets</a></li>
+  </ul></li>
+  <li><a href="#filter-dataset-by-time-window-month-quarter-year" id="toc-filter-dataset-by-time-window-month-quarter-year" class="nav-link" data-scroll-target="#filter-dataset-by-time-window-month-quarter-year">Filter Dataset by Time Window (Month / Quarter / Year)</a>
+  <ul class="collapse">
+  <li><a href="#pick-a-month" id="toc-pick-a-month" class="nav-link" data-scroll-target="#pick-a-month">Pick a month</a></li>
+  <li><a href="#pick-a-quarter" id="toc-pick-a-quarter" class="nav-link" data-scroll-target="#pick-a-quarter">Pick a quarter</a></li>
+  <li><a href="#pick-a-year" id="toc-pick-a-year" class="nav-link" data-scroll-target="#pick-a-year">Pick a year</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -347,7 +360,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Building a Reading Time Tracker [2]</h1>
+<h1 class="title">Kindly Measured Reading [2/3]: The Data</h1>
   <div class="quarto-categories">
     <div class="quarto-category">reading</div>
     <div class="quarto-category">tracking</div>
@@ -360,7 +373,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <div>
   <div class="description">
-    Logging reading sessions on IOS devices, exporting Calendar data, and analyzing and reporting data in Rmarkdown.
+    From .ics and Goodreads CSV to a clean dataset – what’s included, what’s missing, and how I join them
   </div>
 </div>
 
@@ -383,7 +396,51 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>In this post, I’ll explore the data from the Reading Time Tracker I built in the previous post—specifically, how to export the calendar logs as an <code>.ics</code> file, import them into R, and do the analysis.</p>
+<p>In the previous post, I talked about how I built a lightweight <strong>Reading Time Tracker</strong> (Shortcuts → Calendar) so each reading session gets logged automatically.</p>
+<p>In this post, I’ll walk through how to export calendar events as an <code>.ics</code> file, export your Goodreads library as a <code>.csv</code>, and then import and review both in R. The goal is to end up with a clean, analysis-ready dataset where:</p>
+<ul>
+<li>the <strong>Calendar data</strong> tells me <em>when</em> I read (session-level start/end times)</li>
+<li>the <strong>Goodreads data</strong> tells me <em>what</em> I read (book-level metadata like author/ISBN/shelf/ratings)</li>
+</ul>
+<p>Along the way, I’ll point out what each source includes (and what it doesn’t), and show a few simple, general cleaning steps needed to line up book titles across the two exports. In the following post, I’ll use the cleaned data to summarize and visualize reading time patterns.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+At a glance
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Export Calendar <code>.ics</code> and import into R</li>
+<li>Export Goodreads <code>.csv</code> and import into R</li>
+<li>Data prep</li>
+<li>Merge into one complete dataset</li>
+<li>Filter by a time window (month / quarter / year)</li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Downloadable files
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If you’d like to follow along, here are the files used in this post:</p>
+<ul>
+<li><p>Sample calendar dataset: <code>calendar_df.rds</code><br>
+<a href="data/calendar_df.rds">Download</a></p></li>
+<li><p>Sample Goodreads dataset: <code>goodreads_df.rds</code><br>
+<a href="data/goodreads_df.rds">Download</a></p></li>
+</ul>
+</div>
+</div>
 <section id="exporting-.ics-from-calendar" class="level2">
 <h2 class="anchored" data-anchor-id="exporting-.ics-from-calendar">Exporting <code>.ics</code> from Calendar</h2>
 <p>I use <strong>Google Calendar</strong> as my main calendar, and I’ve imported it into <strong>Apple Calendar</strong> so my Google calendars are available inside <strong>Shortcuts</strong> (via Apple’s Calendar integration). For the reading tracker, I created a dedicated calendar called <strong>Reading2026</strong>, which the shortcut uses to store each reading session as an event.</p>
@@ -413,7 +470,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="a-small-quirk-apple-vs.-google-.ics-data" class="level3">
 <h3 class="anchored" data-anchor-id="a-small-quirk-apple-vs.-google-.ics-data">A small quirk: Apple vs.&nbsp;Google <code>.ics</code> data</h3>
 <p>After importing both <code>.ics</code> files into R, I noticed that the Apple Calendar <code>.ics</code> sometimes includes extra rows/fields that are harder to parse cleanly and can introduce edge-case issues. I looked into this issue briefly but couldn’t find any documentation or discussions that explain what might have led to this issue.</p>
-<p>In comparison, the Google Calendar data is cleaner. To keep the project moving, I’ll use the <strong>Google Calendar</strong> <code>.ics</code> file as the example dataset for the importing and analysis steps in the rest of this post.</p>
+<p>In my case, the Google Calendar export was easier to work with. To keep things simple, I’ll use the Google Calendar <code>.ics</code> file as the example dataset for the importing and analysis steps in the rest of this post.</p>
 </section>
 </section>
 <section id="importing-.ics-into-r" class="level2">
@@ -421,7 +478,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Once you have an <code>.ics</code> file, the next step is turning it into a dataframe.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#Load the packages needed for retreiving the data</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#Load the packages needed for retrieving the data</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Install the packages if they aren't yet</span></span>
@@ -440,50 +497,140 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>ics_path <span class="ot">&lt;-</span> <span class="st">"ENTER YOUR ICS FILE PATH HERE"</span></span>
 <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Read .ics (VEVENT entries)</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Read .ics file</span></span>
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
 <span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>ics_raw <span class="ot">&lt;-</span> <span class="fu">ical_parse_df</span>(ics_path)</span>
 <span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Make it a tibble for nicer printing</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>reading_df <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(ics_raw)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>calendar_df <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(ics_raw)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="whats-in-the-.ics-dataset" class="level2">
-<h2 class="anchored" data-anchor-id="whats-in-the-.ics-dataset">What’s in the <code>.ics</code> Dataset</h2>
-<p>Now let’s take a look at what fields the calendar dataset provides.(I’ve created a <a href="data/reading_df.rds">dummy dataset</a> for showcase purposes.)</p>
+<section id="whats-in-the-calendar-dataset" class="level2">
+<h2 class="anchored" data-anchor-id="whats-in-the-calendar-dataset">What’s in the Calendar Dataset</h2>
+<p>Now let’s take a look at what fields the calendar dataset provides. I’ve created a sample <a href="data/calendar_df.rds">calendar dataset</a>, called <code>calendar_df</code>, if you’d like to follow along.</p>
+<div class="scroll-container" style="overflow-x: scroll;white-space: nowrap;">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Show a quick structure preview</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Show the first 10 rows of the dataset</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(reading_df, <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre class="hscroll"><code>                                   uid                       summary
-1 9C8E9A43-EDEF-D832-7083-4A23A1628CD3      Book3: Project Hail Mary
-2 C3122372-3996-DC8D-C0AC-A2DB79FBA943     Book4: The Secret History
-3 695A52D8-00B3-7D86-FF46-CD81A8F2095C        Book2: The Kite Runner
-4 4AFA90C7-C9D4-754D-A4FD-B8F1C3CA23AB Book5: Guns, Germs, and Steel
-5 C490962D-97B1-59E4-7BE9-50B6C8DB16FB     Book4: The Secret History
-                start                 end description       last.modified
-1 2025-01-01 08:05:27 2025-01-01 08:23:27          NA 2025-01-01 08:27:03
-2 2025-01-01 18:05:11 2025-01-01 19:44:11          NA 2025-01-01 19:49:19
-3 2025-01-01 19:44:49 2025-01-01 20:20:49          NA 2025-01-01 20:27:12
-4 2025-01-02 01:53:42 2025-01-02 03:21:42          NA 2025-01-02 03:24:40
-5 2025-01-02 16:33:35 2025-01-02 17:58:35          NA 2025-01-02 18:00:58
-     status
-1 CONFIRMED
-2 CONFIRMED
-3 CONFIRMED
-4 CONFIRMED
-5 CONFIRMED</code></pre>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(calendar_df, <span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 16%">
+<col style="width: 13%">
+<col style="width: 13%">
+<col style="width: 8%">
+<col style="width: 13%">
+<col style="width: 6%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">uid</th>
+<th style="text-align: left;">summary</th>
+<th style="text-align: left;">start</th>
+<th style="text-align: left;">end</th>
+<th style="text-align: left;">description</th>
+<th style="text-align: left;">last.modified</th>
+<th style="text-align: left;">status</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">9C8E9A43-EDEF-D832-7083-4A23A1628CD3</td>
+<td style="text-align: left;">Project Hail Mary</td>
+<td style="text-align: left;">2025-01-01 08:05:27</td>
+<td style="text-align: left;">2025-01-01 08:23:27</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">2025-01-01 08:27:03</td>
+<td style="text-align: left;">CONFIRMED</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">C3122372-3996-DC8D-C0AC-A2DB79FBA943</td>
+<td style="text-align: left;">The Secret History</td>
+<td style="text-align: left;">2025-01-01 18:05:11</td>
+<td style="text-align: left;">2025-01-01 19:44:11</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">2025-01-01 19:49:19</td>
+<td style="text-align: left;">CONFIRMED</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">695A52D8-00B3-7D86-FF46-CD81A8F2095C</td>
+<td style="text-align: left;">The Kite Runner</td>
+<td style="text-align: left;">2025-01-01 19:44:49</td>
+<td style="text-align: left;">2025-01-01 20:20:49</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">2025-01-01 20:27:12</td>
+<td style="text-align: left;">CONFIRMED</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">4AFA90C7-C9D4-754D-A4FD-B8F1C3CA23AB</td>
+<td style="text-align: left;">Guns, Germs, and Steel</td>
+<td style="text-align: left;">2025-01-02 01:53:42</td>
+<td style="text-align: left;">2025-01-02 03:21:42</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">2025-01-02 03:24:40</td>
+<td style="text-align: left;">CONFIRMED</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">C490962D-97B1-59E4-7BE9-50B6C8DB16FB</td>
+<td style="text-align: left;">The Secret History</td>
+<td style="text-align: left;">2025-01-02 16:33:35</td>
+<td style="text-align: left;">2025-01-02 17:58:35</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">2025-01-02 18:00:58</td>
+<td style="text-align: left;">CONFIRMED</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ADA0D938-47D5-A425-7F70-B977B7486DEE</td>
+<td style="text-align: left;">The Secret History</td>
+<td style="text-align: left;">2025-01-03 22:11:44</td>
+<td style="text-align: left;">2025-01-03 22:29:44</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">2025-01-03 22:34:22</td>
+<td style="text-align: left;">CONFIRMED</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">010627B9-8BE5-3E1C-661B-E22B65DEDBB8</td>
+<td style="text-align: left;">The Story of A New Name</td>
+<td style="text-align: left;">2025-01-04 03:00:54</td>
+<td style="text-align: left;">2025-01-04 03:38:54</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">2025-01-04 03:43:38</td>
+<td style="text-align: left;">CONFIRMED</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">032626A0-2265-D055-D033-78363E96CEDF</td>
+<td style="text-align: left;">The Secret History</td>
+<td style="text-align: left;">2025-01-14 21:38:01</td>
+<td style="text-align: left;">2025-01-14 22:19:01</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">2025-01-14 22:22:14</td>
+<td style="text-align: left;">CONFIRMED</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">A58BA23E-669F-199D-B3CB-9330E6BB386B</td>
+<td style="text-align: left;">The Kite Runner</td>
+<td style="text-align: left;">2025-01-15 10:48:39</td>
+<td style="text-align: left;">2025-01-15 12:27:39</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">2025-01-15 12:34:49</td>
+<td style="text-align: left;">CONFIRMED</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">306BC9B4-BA07-7FD6-A2D4-0C68C60D6620</td>
+<td style="text-align: left;">Guns, Germs, and Steel</td>
+<td style="text-align: left;">2025-01-16 22:16:51</td>
+<td style="text-align: left;">2025-01-16 22:45:51</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">2025-01-16 22:48:38</td>
+<td style="text-align: left;">CONFIRMED</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
-<div class="cell">
-<style type="text/css">
-.hscroll {
-  overflow-x: auto;
-  white-space: nowrap;
-}
-</style>
 </div>
 <p>Below is a quick summary of the fields.</p>
 <ul>
@@ -501,57 +648,1387 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><code>status</code> indicates event status. Common values include <code>CONFIRMED</code>, <code>TENTATIVE</code>, <code>CANCELLED</code>. In my workflow, events created via Shortcuts show up as <code>CONFIRMED</code>.</li>
 </ul>
 </section>
-<section id="hypotheses-to-explore-what-im-curious-about" class="level2">
-<h2 class="anchored" data-anchor-id="hypotheses-to-explore-what-im-curious-about">Hypotheses to Explore (What I’m Curious About)</h2>
-<p>Now that I understand what fields the calendar export provides, the next step is deciding what I want to learn—and what additional data (if any) would make the analysis more meaningful.</p>
-<p>Below is a list of questions I’m interested in answering. Most of them come with implicit assumptions about my reading habits. By collecting my own data and analyse them, I can see which assumptions hold up and which don’t. I also hope to find a few patterns that I didn’t anticipate. That’s what I enjoy the most about a data-driven approach: it can surface patterns I wouldn’t notice otherwise, and it helps me check my own biases with something more concrete than memory.</p>
-<p>As I worked through these questions, I also realized I’ll need a bit more data to answer them well:</p>
+<section id="exporting-library-data-.csv-from-goodreads" class="level2">
+<h2 class="anchored" data-anchor-id="exporting-library-data-.csv-from-goodreads">Exporting Library Data (<code>.csv</code>) from Goodreads</h2>
+<p>Goodreads lets readers export their entire library (including information such as book titles, ISBN, shelves/status, ratings, and reading dates) as a <code>.csv</code> file. This ends up being a convenient companion dataset to the Calendar dataset: Calendar tells me when I read, and Goodreads describe further what I read and whether I finished it.</p>
+<p>Here’s how to export the file:</p>
+<ol type="1">
+<li>Open <a href="https://www.goodreads.com/"><strong>Goodreads</strong></a> in a browser</li>
+<li>On the <strong>My Books</strong> page, look for <strong>Tools</strong> in the left sidebar</li>
+<li>Click <strong>Import and export</strong></li>
+<li>Under <strong>Export</strong>, click <strong>Export Library</strong>. Goodreads will generate the file in the background and generate a link called “Your export from [date] - [time]” below the Export Library button.</li>
+<li>Refresh the page and download the <code>.csv</code> file.</li>
+</ol>
+<p>For file management purposes, I usually rename the file, like <code>goodreads_library_export_20251231.csv</code>, so it’s time-stamped.</p>
+</section>
+<section id="importing-library-data-into-r" class="level2">
+<h2 class="anchored" data-anchor-id="importing-library-data-into-r">Importing Library Data into R</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="do">##### </span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">#Load the packages needed for retreiving the data </span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Install the packages if they aren't yet</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>pkgs <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"readr"</span>, <span class="st">"stringr"</span>, <span class="st">"janitor"</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>missing <span class="ot">&lt;-</span> pkgs[<span class="sc">!</span>pkgs <span class="sc">%in%</span> <span class="fu">rownames</span>(<span class="fu">installed.packages</span>())]</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(missing) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(missing, <span class="at">dependencies =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">lapply</span>(pkgs, library, <span class="at">character.only =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="do">##### </span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Point to Goodreads file</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="do">##### </span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>goodreads_path <span class="ot">&lt;-</span> <span class="st">"ENTER YOUR CSV FILE PATH HERE"</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Read .csv file</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>goodreads_raw <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(goodreads_path, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Make it a tibble for nicer printing</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>goodreads_df <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(goodreads_raw)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="whats-in-the-goodreads-dataset" class="level2">
+<h2 class="anchored" data-anchor-id="whats-in-the-goodreads-dataset">What’s in the Goodreads Dataset</h2>
+<p>Similarly, I’ve created a sample <a href="data/goodreads_df.rds">Goodreads library dataset</a>, called <code>goodreads_df</code>, so we can explore it together.</p>
+<p>Before we dive in, we’ll clean the column names. Goodreads uses spaces and title case (e.g., <code>Book Id</code>, <code>Date Read</code>), so I convert them to snake_case (e.g., <code>book_id</code>, <code>date_read</code>) to make the rest of the code easier to read.</p>
+<p>Goodreads also stores dates as strings (often like <code>YYYY/MM/DD</code>). I’ll convert them into proper Date values <code>YYYY-MM-DD</code> so they’re easier to filter and summarize later.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>goodreads_df <span class="ot">&lt;-</span> goodreads_df <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">date_read  =</span> lubridate<span class="sc">::</span><span class="fu">ymd</span>(stringr<span class="sc">::</span><span class="fu">str_replace_all</span>(date_read, <span class="st">"/"</span>, <span class="st">"-"</span>)),</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">date_added =</span> lubridate<span class="sc">::</span><span class="fu">ymd</span>(stringr<span class="sc">::</span><span class="fu">str_replace_all</span>(date_added, <span class="st">"/"</span>, <span class="st">"-"</span>))</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now, let’s take a look at the fields the Goodreads dataset <code>goodreads_df</code> provides:</p>
+<div class="scroll-container" style="overflow-x: scroll;white-space: nowrap;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Show the first 10 rows of the dataset</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(goodreads_df, <span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 1%">
+<col style="width: 17%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 4%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 2%">
+<col style="width: 3%">
+<col style="width: 5%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 6%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 4%">
+<col style="width: 6%">
+<col style="width: 4%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 3%">
+<col style="width: 2%">
+<col style="width: 3%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">book_id</th>
+<th style="text-align: left;">title</th>
+<th style="text-align: left;">author</th>
+<th style="text-align: left;">author_l_f</th>
+<th style="text-align: left;">additional_authors</th>
+<th style="text-align: left;">isbn</th>
+<th style="text-align: left;">isbn13</th>
+<th style="text-align: right;">my_rating</th>
+<th style="text-align: right;">average_rating</th>
+<th style="text-align: left;">publisher</th>
+<th style="text-align: left;">binding</th>
+<th style="text-align: right;">number_of_pages</th>
+<th style="text-align: right;">year_published</th>
+<th style="text-align: right;">original_publication_year</th>
+<th style="text-align: left;">date_read</th>
+<th style="text-align: left;">date_added</th>
+<th style="text-align: left;">bookshelves</th>
+<th style="text-align: left;">bookshelves_with_positions</th>
+<th style="text-align: left;">exclusive_shelf</th>
+<th style="text-align: left;">my_review</th>
+<th style="text-align: left;">spoiler</th>
+<th style="text-align: left;">private_notes</th>
+<th style="text-align: right;">read_count</th>
+<th style="text-align: right;">owned_copies</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">900001</td>
+<td style="text-align: left;">The Story of a New Name (Neapolitan Novels, #2)</td>
+<td style="text-align: left;">Elena Ferrante</td>
+<td style="text-align: left;">Ferrante, Elena</td>
+<td style="text-align: left;">Ann Goldstein</td>
+<td style="text-align: left;">=“1609450786”</td>
+<td style="text-align: left;">=“9781609450786”</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">4.46</td>
+<td style="text-align: left;">Europa Editions</td>
+<td style="text-align: left;">Paperback</td>
+<td style="text-align: right;">471</td>
+<td style="text-align: right;">2012</td>
+<td style="text-align: right;">2012</td>
+<td style="text-align: left;">2025-02-18</td>
+<td style="text-align: left;">2024-12-30</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">900002</td>
+<td style="text-align: left;">The Kite Runner</td>
+<td style="text-align: left;">Khaled Hosseini</td>
+<td style="text-align: left;">Hosseini, Khaled</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">=“159463193X”</td>
+<td style="text-align: left;">=“9781594631931”</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4.32</td>
+<td style="text-align: left;">Riverhead Books</td>
+<td style="text-align: left;">Paperback</td>
+<td style="text-align: right;">371</td>
+<td style="text-align: right;">2004</td>
+<td style="text-align: right;">2003</td>
+<td style="text-align: left;">2025-07-10</td>
+<td style="text-align: left;">2024-12-29</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">900003</td>
+<td style="text-align: left;">The Kite Runner</td>
+<td style="text-align: left;">Khaled Hosseini</td>
+<td style="text-align: left;">Hosseini, Khaled</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">=“159463193X”</td>
+<td style="text-align: left;">=“9781594631931”</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4.32</td>
+<td style="text-align: left;">Riverhead Books</td>
+<td style="text-align: left;">Kindle Edition</td>
+<td style="text-align: right;">371</td>
+<td style="text-align: right;">2004</td>
+<td style="text-align: right;">2003</td>
+<td style="text-align: left;">2025-07-10</td>
+<td style="text-align: left;">2024-12-29</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">900004</td>
+<td style="text-align: left;">Project Hail Mary (Hardcover)</td>
+<td style="text-align: left;">Andy Weir</td>
+<td style="text-align: left;">Weir, Andy</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">=“0593135202”</td>
+<td style="text-align: left;">=“9780593135204”</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">4.51</td>
+<td style="text-align: left;">Ballantine Books</td>
+<td style="text-align: left;">Hardcover</td>
+<td style="text-align: right;">496</td>
+<td style="text-align: right;">2021</td>
+<td style="text-align: right;">2021</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">2025-01-20</td>
+<td style="text-align: left;">currently-reading</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">currently-reading</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">900005</td>
+<td style="text-align: left;">Project Hail Mary (Paperback)</td>
+<td style="text-align: left;">Andy Weir</td>
+<td style="text-align: left;">Weir, Andy</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">=“0593135202”</td>
+<td style="text-align: left;">=“9780593135204”</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">4.51</td>
+<td style="text-align: left;">Ballantine Books</td>
+<td style="text-align: left;">Paperback</td>
+<td style="text-align: right;">496</td>
+<td style="text-align: right;">2022</td>
+<td style="text-align: right;">2021</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">2025-01-20</td>
+<td style="text-align: left;">currently-reading</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">currently-reading</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">900006</td>
+<td style="text-align: left;">The Secret History (Vintage Classics)</td>
+<td style="text-align: left;">Donna Tartt</td>
+<td style="text-align: left;">Tartt, Donna</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">=“1400031702”</td>
+<td style="text-align: left;">=“9781400031702”</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">4.12</td>
+<td style="text-align: left;">Vintage</td>
+<td style="text-align: left;">Paperback</td>
+<td style="text-align: right;">576</td>
+<td style="text-align: right;">2004</td>
+<td style="text-align: right;">1992</td>
+<td style="text-align: left;">2025-01-03</td>
+<td style="text-align: left;">2024-12-15</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">900007</td>
+<td style="text-align: left;">Guns, Germs, and Steel: The Fates of Human Societies</td>
+<td style="text-align: left;">Jared Diamond</td>
+<td style="text-align: left;">Diamond, Jared</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">=“0393317552”</td>
+<td style="text-align: left;">=“9780393317558”</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4.05</td>
+<td style="text-align: left;">W. W. Norton &amp; Company</td>
+<td style="text-align: left;">Paperback</td>
+<td style="text-align: right;">528</td>
+<td style="text-align: right;">1997</td>
+<td style="text-align: right;">1997</td>
+<td style="text-align: left;">2025-11-20</td>
+<td style="text-align: left;">2022-10-01</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">900008</td>
+<td style="text-align: left;">Small Things Like These: A Novel</td>
+<td style="text-align: left;">Claire Keegan</td>
+<td style="text-align: left;">Keegan, Claire</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">=“0802158749”</td>
+<td style="text-align: left;">=“9780802158741”</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">4.09</td>
+<td style="text-align: left;">Grove Press</td>
+<td style="text-align: left;">Hardcover</td>
+<td style="text-align: right;">128</td>
+<td style="text-align: right;">2021</td>
+<td style="text-align: right;">2021</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">2023-12-29</td>
+<td style="text-align: left;">to-read</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">to-read</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">900009</td>
+<td style="text-align: left;">Atomic Habits: An Easy &amp; Proven Way to Build Good Habits &amp; Break Bad Ones</td>
+<td style="text-align: left;">James Clear</td>
+<td style="text-align: left;">Clear, James</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">=“0735211299”</td>
+<td style="text-align: left;">=“9780735211292”</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4.35</td>
+<td style="text-align: left;">Avery</td>
+<td style="text-align: left;">Hardcover</td>
+<td style="text-align: right;">320</td>
+<td style="text-align: right;">2018</td>
+<td style="text-align: right;">2018</td>
+<td style="text-align: left;">2023-01-15</td>
+<td style="text-align: left;">2022-12-30</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">900010</td>
+<td style="text-align: left;">Educated: A Memoir (Reese’s Book Club)</td>
+<td style="text-align: left;">Tara Westover</td>
+<td style="text-align: left;">Westover, Tara</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">=“0399590501”</td>
+<td style="text-align: left;">=“9780399590504”</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">4.47</td>
+<td style="text-align: left;">Random House</td>
+<td style="text-align: left;">Hardcover</td>
+<td style="text-align: right;">352</td>
+<td style="text-align: right;">2018</td>
+<td style="text-align: right;">2018</td>
+<td style="text-align: left;">2022-06-05</td>
+<td style="text-align: left;">2022-01-10</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Goodreads exports a fairly wide library table.</p>
 <ul>
-<li><strong>Reading progress:</strong> I’ll likely add a simple progress field to the tracker (e.g., percentage or pages) so I can study completion and drop-off points.</li>
-<li><strong>Book metadata:</strong> I’ll pull basic metadata (e.g., genre, length/word count) from another source. I will document that process in a separate post.</li>
+<li><code>Book Id</code> — Goodreads’ unique ID for this specific library entry</li>
+<li><code>Title</code> — Book title as listed in Goodreads</li>
+<li><code>Author</code> — Primary author name.</li>
+<li><code>Author l-f</code> — Author name in “Last, First” format</li>
+<li><code>Additional Authors</code> — Co-authors, translators, editors, etc. (when applicable)</li>
+<li><code>ISBN</code> — 10-digit ISBN for the edition</li>
+<li><code>ISBN13</code> — 13-digit ISBN for the edition</li>
+<li><code>My Rating</code> — Your personal rating (blank if you didn’t rate it)</li>
+<li><code>Average Rating</code> — Goodreads community average rating</li>
+<li><code>Publisher</code> — Publisher of the specific edition in the export</li>
+<li><code>Binding</code> — Format of the edition (e.g., hardcover, paperback, Kindle)</li>
+<li><code>Number of Pages</code> — Page count for that edition.</li>
+<li><code>Year Published</code> — Publication year for that edition (can differ across editions)</li>
+<li><code>Original Publication Year</code> — First publication year of the work</li>
+<li><code>Date Read</code> — Date you marked the book as finished (blank if not finished).</li>
+<li><code>Date Added</code> — Date you added the book to your Goodreads library.</li>
+<li><code>Bookshelves</code> — All shelves/tags you assigned (can include multiple, comma-separated).</li>
+<li><code>Bookshelves with positions</code> — Shelf ordering/position metadata (useful if you use shelf ranking).</li>
+<li><code>Exclusive Shelf</code> — The primary status shelf (typically one of <code>read</code>, <code>currently-reading</code>, <code>to-read</code>).</li>
+<li><code>My Review</code> — Your written review text (if any).</li>
+<li><code>Spoiler</code> — Indicates whether your review is marked as containing spoilers.</li>
+<li><code>Private Notes</code> — Your private notes (not public; may be blank if unused).</li>
+<li><code>Read Count</code> — How many times you’ve marked the book as read.</li>
+<li><code>Owned Copies</code> — Number of copies you own (if you track ownership).</li>
 </ul>
-<section id="when-do-i-read" class="level3">
-<h3 class="anchored" data-anchor-id="when-do-i-read">When do I read?</h3>
-<p>First, I want to know some basic, time-related stats.</p>
-<ol type="1">
-<li><strong>Consistency:</strong> Do I read regularly, or in bursts?</li>
-<li><strong>Timing:</strong> What times of day does reading naturally happen?</li>
-<li><strong>Weekday vs weekend:</strong> Does reading cluster on certain days?</li>
-<li><strong>Seasonality:</strong> Are there any month-to-month (or seasonal) shifts?</li>
-</ol>
+<p>Before we dive into any analysis, let’s do a quick sanity check: are there any books with missing titles, or any duplicate entries in the library data?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check for missing + duplicated titles (summary only)</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="st">"title"</span> <span class="sc">%in%</span> <span class="fu">names</span>(goodreads_df)) {</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  title_check <span class="ot">&lt;-</span> goodreads_df <span class="sc">%&gt;%</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">title_raw =</span> title,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">title_is_missing =</span> <span class="fu">is.na</span>(title_raw) <span class="sc">|</span> stringr<span class="sc">::</span><span class="fu">str_squish</span>(title_raw) <span class="sc">==</span> <span class="st">""</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  missing_n <span class="ot">&lt;-</span> <span class="fu">sum</span>(title_check<span class="sc">$</span>title_is_missing)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  unique_n  <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">n_distinct</span>(title_check<span class="sc">$</span>title_raw[<span class="sc">!</span>title_check<span class="sc">$</span>title_is_missing])</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  dup_summary <span class="ot">&lt;-</span> title_check <span class="sc">%&gt;%</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span>title_is_missing) <span class="sc">%&gt;%</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">count</span>(title_raw, <span class="at">name =</span> <span class="st">"n"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(n <span class="sc">&gt;</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">summarise</span>(</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>      <span class="at">n_duplicated_titles =</span> dplyr<span class="sc">::</span><span class="fu">n</span>(),          <span class="co"># how many titles appear more than once</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">n_duplicate_rows    =</span> <span class="fu">sum</span>(n) <span class="sc">-</span> dplyr<span class="sc">::</span><span class="fu">n</span>()  <span class="co"># extra rows beyond the first copy</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>  n_dup_titles <span class="ot">&lt;-</span> dup_summary<span class="sc">$</span>n_duplicated_titles</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>  n_dup_rows   <span class="ot">&lt;-</span> dup_summary<span class="sc">$</span>n_duplicate_rows</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(glue<span class="sc">::</span><span class="fu">glue</span>(</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Missing titles: {missing_n}</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Unique (non-missing) titles: {unique_n}</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Titles with duplicates: {n_dup_titles}</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Extra duplicate rows: {n_dup_rows}</span><span class="sc">\n</span><span class="st">"</span></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>  ))</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>} </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Missing titles: 0
+Unique (non-missing) titles: 13
+Titles with duplicates: 1
+Extra duplicate rows: 1</code></pre>
+</div>
+</div>
+<p>Now that we have a clearer picture of what’s in the dataset, we can start cleaning the data.</p>
 </section>
-<section id="how-do-i-move-through-books" class="level3">
-<h3 class="anchored" data-anchor-id="how-do-i-move-through-books">How do I move through books?</h3>
-<p>These focus on how I move through books. Some of these require basic book metadata (e.g., genre, length), which I’ll add later.</p>
-<section id="for-books-i-finish" class="level4">
-<h4 class="anchored" data-anchor-id="for-books-i-finish">For books I finish</h4>
-<ol type="1">
-<li><strong>Book overview:</strong> How many books did I read, what genres were they, and how long did each one take?</li>
-<li><strong>Focus vs.&nbsp;switching:</strong> Do I tend to read one book at a time, or bounce between several?</li>
-<li><strong>Pace by book:</strong> How long does it typically take me to finish a book (total hours and number of sessions)?</li>
-<li><strong>Engagement pattern:</strong> Which books show many short sessions vs.&nbsp;fewer long sessions?</li>
-<li><strong>Switching behavior:</strong> If I switch books mid-stream, is it random—or does it happen after long gaps, short sessions, or late-night reading?</li>
-<li><strong>Genre differences:</strong> Do I read certain genres at different times of day or in different session lengths?</li>
-</ol>
+<section id="cleaning-the-goodreads-dataset---prep-work" class="level2">
+<h2 class="anchored" data-anchor-id="cleaning-the-goodreads-dataset---prep-work">Cleaning the Goodreads Dataset - Prep work</h2>
+<p>As usual, we will first load a few packages we’ll use throughout the cleaning + matching process.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Packages (install if missing)</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>pkgs <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"dplyr"</span>, <span class="st">"stringr"</span>, <span class="st">"tidyr"</span>, <span class="st">"lubridate"</span>, <span class="st">"tibble"</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>missing <span class="ot">&lt;-</span> pkgs[<span class="sc">!</span>pkgs <span class="sc">%in%</span> <span class="fu">rownames</span>(<span class="fu">installed.packages</span>())]</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(missing) <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="fu">install.packages</span>(missing, <span class="at">dependencies =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">lapply</span>(pkgs, library, <span class="at">character.only =</span> <span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="clean-book-titles-into-a-consistent-format" class="level3">
+<h3 class="anchored" data-anchor-id="clean-book-titles-into-a-consistent-format">Clean book titles into a consistent format</h3>
+<p>A very common issue is that the <em>same</em> book title can be written slightly differently across datasets. For example, the Goodreads export may include extra edition or series text:</p>
+<ul>
+<li><code>Project Hail Mary (Hardcover)</code></li>
+<li><code>My Brilliant Friend (Neapolitan Novels, #1)</code></li>
+</ul>
+<p>But, in the calendar tracker, I usually type a shorter name like <code>Project Hail Mary</code> and <code>My Brilliant Friend</code>.</p>
+<p>To make matching easier, we’ll create a minimal title-cleaning function. I’m keeping it intentionally simple so it’s easy to adapt.</p>
+<p>Rules: - lower case - remove trailing parenthetical info like <code>(Hardcover)</code> or <code>(Neapolitan Novels, #2)</code> - remove punctuation - squish extra spaces</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Helper: minimal book title normalizer</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>clean_title <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  x <span class="sc">%&gt;%</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_to_lower</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># remove trailing parenthetical at the end of the title</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">s*</span><span class="sc">\\</span><span class="st">(.*?</span><span class="sc">\\</span><span class="st">)</span><span class="sc">\\</span><span class="st">s*$"</span>, <span class="st">""</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># remove punctuation/symbols</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"[^a-z0-9</span><span class="sc">\\</span><span class="st">s]"</span>, <span class="st">" "</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># collapse multiple spaces</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_squish</span>()</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We’ll add <code>title_clean</code>, which we’ll use for both: - duplicate detection - title matching</p>
+<div class="scroll-container" style="overflow-x: scroll;white-space: nowrap;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>goodreads_prepped <span class="ot">&lt;-</span> goodreads_df <span class="sc">%&gt;%</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">title_clean =</span> <span class="fu">clean_title</span>(title))</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>goodreads_prepped <span class="sc">%&gt;%</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(book_id, title, title_clean, author, exclusive_shelf, date_read) <span class="sc">%&gt;%</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">10</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 4%">
+<col style="width: 37%">
+<col style="width: 35%">
+<col style="width: 8%">
+<col style="width: 9%">
+<col style="width: 5%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">book_id</th>
+<th style="text-align: left;">title</th>
+<th style="text-align: left;">title_clean</th>
+<th style="text-align: left;">author</th>
+<th style="text-align: left;">exclusive_shelf</th>
+<th style="text-align: left;">date_read</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">900001</td>
+<td style="text-align: left;">The Story of a New Name (Neapolitan Novels, #2)</td>
+<td style="text-align: left;">the story of a new name</td>
+<td style="text-align: left;">Elena Ferrante</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">2025-02-18</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">900002</td>
+<td style="text-align: left;">The Kite Runner</td>
+<td style="text-align: left;">the kite runner</td>
+<td style="text-align: left;">Khaled Hosseini</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">2025-07-10</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">900003</td>
+<td style="text-align: left;">The Kite Runner</td>
+<td style="text-align: left;">the kite runner</td>
+<td style="text-align: left;">Khaled Hosseini</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">2025-07-10</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">900004</td>
+<td style="text-align: left;">Project Hail Mary (Hardcover)</td>
+<td style="text-align: left;">project hail mary</td>
+<td style="text-align: left;">Andy Weir</td>
+<td style="text-align: left;">currently-reading</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">900005</td>
+<td style="text-align: left;">Project Hail Mary (Paperback)</td>
+<td style="text-align: left;">project hail mary</td>
+<td style="text-align: left;">Andy Weir</td>
+<td style="text-align: left;">currently-reading</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">900006</td>
+<td style="text-align: left;">The Secret History (Vintage Classics)</td>
+<td style="text-align: left;">the secret history</td>
+<td style="text-align: left;">Donna Tartt</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">2025-01-03</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">900007</td>
+<td style="text-align: left;">Guns, Germs, and Steel: The Fates of Human Societies</td>
+<td style="text-align: left;">guns germs and steel the fates of human societies</td>
+<td style="text-align: left;">Jared Diamond</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">2025-11-20</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">900008</td>
+<td style="text-align: left;">Small Things Like These: A Novel</td>
+<td style="text-align: left;">small things like these a novel</td>
+<td style="text-align: left;">Claire Keegan</td>
+<td style="text-align: left;">to-read</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">900009</td>
+<td style="text-align: left;">Atomic Habits: An Easy &amp; Proven Way to Build Good Habits &amp; Break Bad Ones</td>
+<td style="text-align: left;">atomic habits an easy proven way to build good habits break bad ones</td>
+<td style="text-align: left;">James Clear</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">2023-01-15</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">900010</td>
+<td style="text-align: left;">Educated: A Memoir (Reese’s Book Club)</td>
+<td style="text-align: left;">educated a memoir</td>
+<td style="text-align: left;">Tara Westover</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">2022-06-05</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
 </section>
-<section id="for-books-i-dont-finish" class="level4">
-<h4 class="anchored" data-anchor-id="for-books-i-dont-finish">For books I don’t finish</h4>
-<ol type="1">
-<li><strong>Abandonment point:</strong> How far do I typically get before stopping?</li>
-<li><strong>The “fade-out” signal:</strong> Do unfinished books show a common pattern before I drop them (shrinking session length, longer gaps, switching to other books)?</li>
-</ol>
+<section id="spot-duplicates-in-the-goodreads-dataset" class="level3">
+<h3 class="anchored" data-anchor-id="spot-duplicates-in-the-goodreads-dataset">Spot duplicates in the Goodreads Dataset</h3>
+<p>Another common issue: the Goodreads library export can contain <strong>duplicate entries</strong> for the “same” book. This often happens when you accidentally add multiple editions (hardcover vs paperback, different publishers, etc.).</p>
+<p>Here’s a simple rule of thumb:</p>
+<p>If two rows share the same <strong>cleaned title</strong> <em>and</em> <strong>author</strong>, we treat them as a duplicate candidate set.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="do">####</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Helper: identify potential duplicates in Goodreads</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="do">####</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>find_goodreads_dupes <span class="ot">&lt;-</span> <span class="cf">function</span>(gr) {</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  gr <span class="sc">%&gt;%</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(title_clean, author) <span class="sc">%&gt;%</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(<span class="fu">n</span>() <span class="sc">&gt;</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(title_clean, author, book_id)</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Because duplicates can happen for different reasons, I recommend reviewing them one by one before deleting anything.</p>
+<p>The following process is to 1) <strong>detect</strong> duplicates 2) <strong>print</strong> them 3) <strong>manually decide</strong> which <code>book_id</code> to remove</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>gr_dupes <span class="ot">&lt;-</span> <span class="fu">find_goodreads_dupes</span>(goodreads_prepped)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"=== Candidate duplicates in Goodreads (same cleaned title + author) ===</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="st">"</span>)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">nrow</span>(gr_dupes) <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"No duplicates detected.</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="st">"</span>)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  gr_dupes <span class="sc">%&gt;%</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(book_id, title, author, isbn, isbn13, number_of_pages, date_read, date_added, exclusive_shelf)<span class="sc">%&gt;%</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    knitr<span class="sc">::</span><span class="fu">kable</span>()</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>After you review the printed table above, choose which IDs you want to remove.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>drop_book_ids <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>   <span class="dv">900003</span>, <span class="dv">900005</span> <span class="co">#[replace with the IDs you want to remove]</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>goodreads_dedup <span class="ot">&lt;-</span> goodreads_prepped <span class="sc">%&gt;%</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>book_id <span class="sc">%in%</span> drop_book_ids)</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>dupes_left <span class="ot">&lt;-</span> goodreads_dedup <span class="sc">%&gt;%</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(title_clean, author, <span class="at">name =</span> <span class="st">"n"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(n <span class="sc">&gt;</span> <span class="dv">1</span>)</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">nrow</span>(dupes_left) <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"No duplicate candidates remain after de-duplication."</span>)</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(dupes_left,</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>              <span class="at">caption =</span> <span class="st">"Remaining duplicate candidates after de-duplication"</span>)</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>No duplicate candidates remain after de-duplication.</code></pre>
+</div>
+</div>
+<p>As the result shows, we have elimintated the duplicated book titles/rows.</p>
 </section>
 </section>
-<section id="what-predicts-momentum" class="level3">
-<h3 class="anchored" data-anchor-id="what-predicts-momentum">What predicts momentum?</h3>
-<ol type="1">
-<li><strong>What predicts “stickiness”:</strong> What factors correlate with steady progress—time of day, session length, weekday/weekend, or genre?</li>
-<li><strong>Completion likelihood:</strong> Are some genres more likely to be finished vs.&nbsp;abandoned?</li>
-</ol>
-<hr>
-<p>
-This work is licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> <img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="CC" style="max-width: 1em;max-height:1em;margin-left: .2em;"> <img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt="BY" style="max-width: 1em;max-height:1em;margin-left: .2em;"> <img src="https://mirrors.creativecommons.org/presskit/icons/sa.svg" alt="SA" style="max-width: 1em;max-height:1em;margin-left: .2em;">
-</p>
+<section id="merge-calendar-and-goodreads-datasets" class="level2">
+<h2 class="anchored" data-anchor-id="merge-calendar-and-goodreads-datasets">Merge Calendar and Goodreads Datasets</h2>
+<section id="match-calendar-book-names-to-goodreads-titles" class="level3">
+<h3 class="anchored" data-anchor-id="match-calendar-book-names-to-goodreads-titles">Match calendar book names to Goodreads titles</h3>
+<p>Now we’re ready for the key step: <strong>link the calendar reading logs to the Goodreads library</strong>.</p>
+<p>Because calendar book names are manually typed, I recommend, when you create the book list in Shortcuts, keeping them as close as possible to the titles in Goodreads. However, Goodreads book titles can be long, including information like series and edition notes. So, I’m using a function to do the matching with the following rule:</p>
+<p>If the <strong>cleaned calendar title</strong> is contained in the <strong>cleaned Goodreads title</strong>, treat it as a match candidate.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>find_match_candidates <span class="ot">&lt;-</span> <span class="cf">function</span>(calendar_df, gr) {</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  calendar_titles <span class="ot">&lt;-</span> calendar_df <span class="sc">%&gt;%</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">distinct</span>(summary) <span class="sc">%&gt;%</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(summary), summary <span class="sc">!=</span> <span class="st">""</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">transmute</span>(</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">calendar_title =</span> summary,</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">calendar_clean =</span> <span class="fu">clean_title</span>(calendar_title)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  candidates <span class="ot">&lt;-</span> calendar_titles <span class="sc">%&gt;%</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    tidyr<span class="sc">::</span><span class="fu">crossing</span>(</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>      gr <span class="sc">%&gt;%</span> <span class="fu">select</span>(book_id, title, author, title_clean)</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(<span class="fu">str_detect</span>(title_clean, <span class="fu">fixed</span>(calendar_clean))) <span class="sc">%&gt;%</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(calendar_title, title)</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">calendar_titles =</span> calendar_titles, <span class="at">candidates =</span> candidates)</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Then, we use the following process to review the matches and/or mismatches.</p>
+<ul>
+<li>If there is <strong>exactly 1 match</strong>, we can auto-link it.</li>
+<li>If there are <strong>0 matches</strong>, the calendar title likely needs to be edited (or mapped manually).</li>
+<li>If there are <strong>multiple matches</strong>, it usually means the calendar title is <strong>too generic</strong> (e.g., a short substring that appears in more than one Goodreads title) <em>or</em> your Goodreads library still has multiple editions. In practice, if you keep your calendar title reasonably specific (and you’ve removed duplicates), this should rarely happen — but we’ll still handle it gracefully.</li>
+</ul>
+<div class="scroll-container" style="overflow-x: scroll;white-space: nowrap;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>build_title_map <span class="ot">&lt;-</span> <span class="cf">function</span>(calendar_df, gr) {</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  out <span class="ot">&lt;-</span> <span class="fu">find_match_candidates</span>(calendar_df, gr)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  calendar_titles <span class="ot">&lt;-</span> out<span class="sc">$</span>calendar_titles</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  candidates <span class="ot">&lt;-</span> out<span class="sc">$</span>candidates <span class="sc">%&gt;%</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Simple tie-breakers (still easy to explain):</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>      <span class="co"># 1) Exact match after cleaning</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>      <span class="co"># 2) Starts-with match</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>      <span class="co"># 3) Otherwise, contains match</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">match_rank =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>        title_clean <span class="sc">==</span> calendar_clean <span class="sc">~</span> <span class="dv">1</span>L,</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>        stringr<span class="sc">::</span><span class="fu">str_starts</span>(title_clean, calendar_clean) <span class="sc">~</span> <span class="dv">2</span>L,</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>        <span class="cn">TRUE</span> <span class="sc">~</span> <span class="dv">3</span>L</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>      ),</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Prefer the Goodreads title that is closest in length to the calendar title</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>      <span class="at">extra_chars =</span> <span class="fu">nchar</span>(title_clean) <span class="sc">-</span> <span class="fu">nchar</span>(calendar_clean)</span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># For each calendar title, figure out whether there is a single “best” match</span></span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>  best_summary <span class="ot">&lt;-</span> candidates <span class="sc">%&gt;%</span></span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(calendar_title) <span class="sc">%&gt;%</span></span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(</span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>      <span class="at">n_candidates =</span> <span class="fu">n</span>(),</span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>      <span class="at">best_rank =</span> <span class="fu">min</span>(match_rank),</span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>      <span class="at">best_extra =</span> <span class="fu">min</span>(extra_chars[match_rank <span class="sc">==</span> <span class="fu">min</span>(match_rank)]),</span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>      <span class="at">n_best =</span> <span class="fu">sum</span>(match_rank <span class="sc">==</span> best_rank <span class="sc">&amp;</span> extra_chars <span class="sc">==</span> best_extra),</span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>      <span class="at">candidate_list =</span> <span class="fu">paste0</span>(book_id, <span class="st">" | "</span>, title, <span class="at">collapse =</span> <span class="st">" ; "</span>),</span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a>      <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a>  coverage <span class="ot">&lt;-</span> calendar_titles <span class="sc">%&gt;%</span></span>
+<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">left_join</span>(best_summary, <span class="at">by =</span> <span class="st">"calendar_title"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a>      <span class="at">n_candidates =</span> dplyr<span class="sc">::</span><span class="fu">coalesce</span>(n_candidates, <span class="dv">0</span>L),</span>
+<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a>      <span class="at">n_best =</span> dplyr<span class="sc">::</span><span class="fu">coalesce</span>(n_best, <span class="dv">0</span>L),</span>
+<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a>      <span class="at">status =</span> <span class="fu">case_when</span>(</span>
+<span id="cb16-37"><a href="#cb16-37" aria-hidden="true" tabindex="-1"></a>        n_candidates <span class="sc">==</span> <span class="dv">0</span> <span class="sc">~</span> <span class="st">"no match (edit calendar title OR map manually)"</span>,</span>
+<span id="cb16-38"><a href="#cb16-38" aria-hidden="true" tabindex="-1"></a>        n_best <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">"auto-match"</span>,</span>
+<span id="cb16-39"><a href="#cb16-39" aria-hidden="true" tabindex="-1"></a>        <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"multiple matches (calendar title too generic OR multiple editions — review)"</span></span>
+<span id="cb16-40"><a href="#cb16-40" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb16-41"><a href="#cb16-41" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb16-42"><a href="#cb16-42" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(<span class="fu">desc</span>(n_candidates <span class="sc">==</span> <span class="dv">0</span>), <span class="fu">desc</span>(status <span class="sc">!=</span> <span class="st">"auto-match"</span>), calendar_title)</span>
+<span id="cb16-43"><a href="#cb16-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-44"><a href="#cb16-44" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Auto-map only when there is exactly one best match</span></span>
+<span id="cb16-45"><a href="#cb16-45" aria-hidden="true" tabindex="-1"></a>  auto_map <span class="ot">&lt;-</span> candidates <span class="sc">%&gt;%</span></span>
+<span id="cb16-46"><a href="#cb16-46" aria-hidden="true" tabindex="-1"></a>    <span class="fu">inner_join</span>(</span>
+<span id="cb16-47"><a href="#cb16-47" aria-hidden="true" tabindex="-1"></a>      best_summary <span class="sc">%&gt;%</span> <span class="fu">filter</span>(n_best <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb16-48"><a href="#cb16-48" aria-hidden="true" tabindex="-1"></a>        <span class="fu">select</span>(calendar_title, best_rank, best_extra),</span>
+<span id="cb16-49"><a href="#cb16-49" aria-hidden="true" tabindex="-1"></a>      <span class="at">by =</span> <span class="st">"calendar_title"</span></span>
+<span id="cb16-50"><a href="#cb16-50" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb16-51"><a href="#cb16-51" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(match_rank <span class="sc">==</span> best_rank, extra_chars <span class="sc">==</span> best_extra) <span class="sc">%&gt;%</span></span>
+<span id="cb16-52"><a href="#cb16-52" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(calendar_title, match_rank, extra_chars, book_id) <span class="sc">%&gt;%</span></span>
+<span id="cb16-53"><a href="#cb16-53" aria-hidden="true" tabindex="-1"></a>    <span class="fu">transmute</span>(</span>
+<span id="cb16-54"><a href="#cb16-54" aria-hidden="true" tabindex="-1"></a>      calendar_title,</span>
+<span id="cb16-55"><a href="#cb16-55" aria-hidden="true" tabindex="-1"></a>      book_id,</span>
+<span id="cb16-56"><a href="#cb16-56" aria-hidden="true" tabindex="-1"></a>      <span class="at">goodreads_title =</span> title,</span>
+<span id="cb16-57"><a href="#cb16-57" aria-hidden="true" tabindex="-1"></a>      <span class="at">match_method =</span> <span class="st">"contained-in (ranked)"</span></span>
+<span id="cb16-58"><a href="#cb16-58" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb16-59"><a href="#cb16-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-60"><a href="#cb16-60" aria-hidden="true" tabindex="-1"></a>  manual_map_template <span class="ot">&lt;-</span> coverage <span class="sc">%&gt;%</span></span>
+<span id="cb16-61"><a href="#cb16-61" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(status <span class="sc">!=</span> <span class="st">"auto-match"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb16-62"><a href="#cb16-62" aria-hidden="true" tabindex="-1"></a>    <span class="fu">transmute</span>(</span>
+<span id="cb16-63"><a href="#cb16-63" aria-hidden="true" tabindex="-1"></a>      calendar_title,</span>
+<span id="cb16-64"><a href="#cb16-64" aria-hidden="true" tabindex="-1"></a>      <span class="at">book_id =</span> <span class="cn">NA_integer_</span>,</span>
+<span id="cb16-65"><a href="#cb16-65" aria-hidden="true" tabindex="-1"></a>      <span class="at">goodreads_title =</span> <span class="cn">NA_character_</span>,</span>
+<span id="cb16-66"><a href="#cb16-66" aria-hidden="true" tabindex="-1"></a>      <span class="at">match_method =</span> <span class="st">"manual"</span>,</span>
+<span id="cb16-67"><a href="#cb16-67" aria-hidden="true" tabindex="-1"></a>      <span class="at">note =</span> status</span>
+<span id="cb16-68"><a href="#cb16-68" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb16-69"><a href="#cb16-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-70"><a href="#cb16-70" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
+<span id="cb16-71"><a href="#cb16-71" aria-hidden="true" tabindex="-1"></a>    <span class="at">coverage =</span> coverage,</span>
+<span id="cb16-72"><a href="#cb16-72" aria-hidden="true" tabindex="-1"></a>    <span class="at">candidates =</span> candidates,</span>
+<span id="cb16-73"><a href="#cb16-73" aria-hidden="true" tabindex="-1"></a>    <span class="at">auto_map =</span> auto_map,</span>
+<span id="cb16-74"><a href="#cb16-74" aria-hidden="true" tabindex="-1"></a>    <span class="at">manual_map_template =</span> manual_map_template</span>
+<span id="cb16-75"><a href="#cb16-75" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb16-76"><a href="#cb16-76" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb16-77"><a href="#cb16-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-78"><a href="#cb16-78" aria-hidden="true" tabindex="-1"></a>match_out <span class="ot">&lt;-</span> <span class="fu">build_title_map</span>(calendar_df, goodreads_dedup)</span>
+<span id="cb16-79"><a href="#cb16-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-80"><a href="#cb16-80" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(match_out<span class="sc">$</span>coverage)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 7%">
+<col style="width: 5%">
+<col style="width: 6%">
+<col style="width: 4%">
+<col style="width: 40%">
+<col style="width: 6%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">calendar_title</th>
+<th style="text-align: left;">calendar_clean</th>
+<th style="text-align: right;">n_candidates</th>
+<th style="text-align: right;">best_rank</th>
+<th style="text-align: right;">best_extra</th>
+<th style="text-align: right;">n_best</th>
+<th style="text-align: left;">candidate_list</th>
+<th style="text-align: left;">status</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Guns, Germs, and Steel</td>
+<td style="text-align: left;">guns germs and steel</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">900007 | Guns, Germs, and Steel: The Fates of Human Societies</td>
+<td style="text-align: left;">auto-match</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Project Hail Mary</td>
+<td style="text-align: left;">project hail mary</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">900004 | Project Hail Mary (Hardcover)</td>
+<td style="text-align: left;">auto-match</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">The Kite Runner</td>
+<td style="text-align: left;">the kite runner</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">900002 | The Kite Runner</td>
+<td style="text-align: left;">auto-match</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">The Secret History</td>
+<td style="text-align: left;">the secret history</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">900006 | The Secret History (Vintage Classics)</td>
+<td style="text-align: left;">auto-match</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">The Story of A New Name</td>
+<td style="text-align: left;">the story of a new name</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">900001 | The Story of a New Name (Neapolitan Novels, #2)</td>
+<td style="text-align: left;">auto-match</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>If anything shows up as “no match” or “multiple matches”, we’ll manually specify the mapping. This is also a nice place to show the audience that:</p>
+<ul>
+<li>sometimes it’s easiest to <strong>edit the Shortcut book name</strong></li>
+<li>sometimes you just create a tiny mapping table like this</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Anything not "auto-match" needs human attention</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>needs_manual <span class="ot">&lt;-</span> match_out<span class="sc">$</span>coverage <span class="sc">%&gt;%</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(status <span class="sc">!=</span> <span class="st">"auto-match"</span>)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">nrow</span>(needs_manual) <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  title_map <span class="ot">&lt;-</span> match_out<span class="sc">$</span>auto_map</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(needs_manual, <span class="at">caption =</span> <span class="st">"Titles that need manual review"</span>)</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># --- Manual mapping table (fill in ONLY if needed) ---</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  manual_map <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># calendar_title  = c("..."),</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># book_id         = c(900001),</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># goodreads_title = c("..."),</span></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># match_method    = c("manual")</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>  title_map <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>    match_out<span class="sc">$</span>auto_map,</span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>    manual_map</span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">distinct</span>(calendar_title, <span class="at">.keep_all =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Optional: warn if you still have gaps after manual mapping</span></span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>  still_unmapped <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">anti_join</span>(</span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>    match_out<span class="sc">$</span>coverage <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(calendar_title),</span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>    title_map <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(calendar_title),</span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="st">"calendar_title"</span></span>
+<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">nrow</span>(still_unmapped) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb17-34"><a href="#cb17-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st"> These calendar titles are still not mapped (add them to manual_map or fix the Shortcut title):</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb17-35"><a href="#cb17-35" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(still_unmapped<span class="sc">$</span>calendar_title)</span>
+<span id="cb17-36"><a href="#cb17-36" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb17-37"><a href="#cb17-37" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb17-38"><a href="#cb17-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-39"><a href="#cb17-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Always show the final mapping table used for merging</span></span>
+<span id="cb17-40"><a href="#cb17-40" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(title_map, <span class="at">caption =</span> <span class="st">"Final Title Mapping (calendar → Goodreads)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Final Title Mapping (calendar → Goodreads)</caption>
+<colgroup>
+<col style="width: 22%">
+<col style="width: 7%">
+<col style="width: 49%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">calendar_title</th>
+<th style="text-align: right;">book_id</th>
+<th style="text-align: left;">goodreads_title</th>
+<th style="text-align: left;">match_method</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Guns, Germs, and Steel</td>
+<td style="text-align: right;">900007</td>
+<td style="text-align: left;">Guns, Germs, and Steel: The Fates of Human Societies</td>
+<td style="text-align: left;">contained-in (ranked)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Project Hail Mary</td>
+<td style="text-align: right;">900004</td>
+<td style="text-align: left;">Project Hail Mary (Hardcover)</td>
+<td style="text-align: left;">contained-in (ranked)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">The Kite Runner</td>
+<td style="text-align: right;">900002</td>
+<td style="text-align: left;">The Kite Runner</td>
+<td style="text-align: left;">contained-in (ranked)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">The Secret History</td>
+<td style="text-align: right;">900006</td>
+<td style="text-align: left;">The Secret History (Vintage Classics)</td>
+<td style="text-align: left;">contained-in (ranked)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">The Story of A New Name</td>
+<td style="text-align: right;">900001</td>
+<td style="text-align: left;">The Story of a New Name (Neapolitan Novels, #2)</td>
+<td style="text-align: left;">contained-in (ranked)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="merge-the-calendar-and-goodreads-datasets" class="level3">
+<h3 class="anchored" data-anchor-id="merge-the-calendar-and-goodreads-datasets">Merge the Calendar and Goodreads datasets</h3>
+<p>Now we can attach Goodreads metadata to each calendar reading session, and I’ll call the merged dataset <code>reading_df</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>calendar_matched <span class="ot">&lt;-</span> calendar_df <span class="sc">%&gt;%</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    title_map <span class="sc">%&gt;%</span> <span class="fu">select</span>(calendar_title, book_id),</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"summary"</span> <span class="ot">=</span> <span class="st">"calendar_title"</span>)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Keep only sessions that successfully matched a Goodreads book</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>calendar_matched <span class="ot">&lt;-</span> calendar_matched <span class="sc">%&gt;%</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(book_id))</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>reading_df <span class="ot">&lt;-</span> calendar_matched <span class="sc">%&gt;%</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>    goodreads_dedup,</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="st">"book_id"</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Let’s take a peek into the datasets</p>
+<div class="scroll-container" style="overflow-x: scroll;white-space: nowrap;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>reading_df <span class="sc">%&gt;%</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">8</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 4%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 2%">
+<col style="width: 3%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 8%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 3%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 3%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 4%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 3%">
+<col style="width: 4%">
+<col style="width: 3%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 8%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">uid</th>
+<th style="text-align: left;">summary</th>
+<th style="text-align: left;">start</th>
+<th style="text-align: left;">end</th>
+<th style="text-align: left;">description</th>
+<th style="text-align: left;">last.modified</th>
+<th style="text-align: left;">status</th>
+<th style="text-align: right;">book_id</th>
+<th style="text-align: left;">title</th>
+<th style="text-align: left;">author</th>
+<th style="text-align: left;">author_l_f</th>
+<th style="text-align: left;">additional_authors</th>
+<th style="text-align: left;">isbn</th>
+<th style="text-align: left;">isbn13</th>
+<th style="text-align: right;">my_rating</th>
+<th style="text-align: right;">average_rating</th>
+<th style="text-align: left;">publisher</th>
+<th style="text-align: left;">binding</th>
+<th style="text-align: right;">number_of_pages</th>
+<th style="text-align: right;">year_published</th>
+<th style="text-align: right;">original_publication_year</th>
+<th style="text-align: left;">date_read</th>
+<th style="text-align: left;">date_added</th>
+<th style="text-align: left;">bookshelves</th>
+<th style="text-align: left;">bookshelves_with_positions</th>
+<th style="text-align: left;">exclusive_shelf</th>
+<th style="text-align: left;">my_review</th>
+<th style="text-align: left;">spoiler</th>
+<th style="text-align: left;">private_notes</th>
+<th style="text-align: right;">read_count</th>
+<th style="text-align: right;">owned_copies</th>
+<th style="text-align: left;">title_clean</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">9C8E9A43-EDEF-D832-7083-4A23A1628CD3</td>
+<td style="text-align: left;">Project Hail Mary</td>
+<td style="text-align: left;">2025-01-01 08:05:27</td>
+<td style="text-align: left;">2025-01-01 08:23:27</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">2025-01-01 08:27:03</td>
+<td style="text-align: left;">CONFIRMED</td>
+<td style="text-align: right;">900004</td>
+<td style="text-align: left;">Project Hail Mary (Hardcover)</td>
+<td style="text-align: left;">Andy Weir</td>
+<td style="text-align: left;">Weir, Andy</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">=“0593135202”</td>
+<td style="text-align: left;">=“9780593135204”</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">4.51</td>
+<td style="text-align: left;">Ballantine Books</td>
+<td style="text-align: left;">Hardcover</td>
+<td style="text-align: right;">496</td>
+<td style="text-align: right;">2021</td>
+<td style="text-align: right;">2021</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">2025-01-20</td>
+<td style="text-align: left;">currently-reading</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">currently-reading</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">project hail mary</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">C3122372-3996-DC8D-C0AC-A2DB79FBA943</td>
+<td style="text-align: left;">The Secret History</td>
+<td style="text-align: left;">2025-01-01 18:05:11</td>
+<td style="text-align: left;">2025-01-01 19:44:11</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">2025-01-01 19:49:19</td>
+<td style="text-align: left;">CONFIRMED</td>
+<td style="text-align: right;">900006</td>
+<td style="text-align: left;">The Secret History (Vintage Classics)</td>
+<td style="text-align: left;">Donna Tartt</td>
+<td style="text-align: left;">Tartt, Donna</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">=“1400031702”</td>
+<td style="text-align: left;">=“9781400031702”</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">4.12</td>
+<td style="text-align: left;">Vintage</td>
+<td style="text-align: left;">Paperback</td>
+<td style="text-align: right;">576</td>
+<td style="text-align: right;">2004</td>
+<td style="text-align: right;">1992</td>
+<td style="text-align: left;">2025-01-03</td>
+<td style="text-align: left;">2024-12-15</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">the secret history</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">695A52D8-00B3-7D86-FF46-CD81A8F2095C</td>
+<td style="text-align: left;">The Kite Runner</td>
+<td style="text-align: left;">2025-01-01 19:44:49</td>
+<td style="text-align: left;">2025-01-01 20:20:49</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">2025-01-01 20:27:12</td>
+<td style="text-align: left;">CONFIRMED</td>
+<td style="text-align: right;">900002</td>
+<td style="text-align: left;">The Kite Runner</td>
+<td style="text-align: left;">Khaled Hosseini</td>
+<td style="text-align: left;">Hosseini, Khaled</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">=“159463193X”</td>
+<td style="text-align: left;">=“9781594631931”</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4.32</td>
+<td style="text-align: left;">Riverhead Books</td>
+<td style="text-align: left;">Paperback</td>
+<td style="text-align: right;">371</td>
+<td style="text-align: right;">2004</td>
+<td style="text-align: right;">2003</td>
+<td style="text-align: left;">2025-07-10</td>
+<td style="text-align: left;">2024-12-29</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">the kite runner</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">4AFA90C7-C9D4-754D-A4FD-B8F1C3CA23AB</td>
+<td style="text-align: left;">Guns, Germs, and Steel</td>
+<td style="text-align: left;">2025-01-02 01:53:42</td>
+<td style="text-align: left;">2025-01-02 03:21:42</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">2025-01-02 03:24:40</td>
+<td style="text-align: left;">CONFIRMED</td>
+<td style="text-align: right;">900007</td>
+<td style="text-align: left;">Guns, Germs, and Steel: The Fates of Human Societies</td>
+<td style="text-align: left;">Jared Diamond</td>
+<td style="text-align: left;">Diamond, Jared</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">=“0393317552”</td>
+<td style="text-align: left;">=“9780393317558”</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4.05</td>
+<td style="text-align: left;">W. W. Norton &amp; Company</td>
+<td style="text-align: left;">Paperback</td>
+<td style="text-align: right;">528</td>
+<td style="text-align: right;">1997</td>
+<td style="text-align: right;">1997</td>
+<td style="text-align: left;">2025-11-20</td>
+<td style="text-align: left;">2022-10-01</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">guns germs and steel the fates of human societies</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">C490962D-97B1-59E4-7BE9-50B6C8DB16FB</td>
+<td style="text-align: left;">The Secret History</td>
+<td style="text-align: left;">2025-01-02 16:33:35</td>
+<td style="text-align: left;">2025-01-02 17:58:35</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">2025-01-02 18:00:58</td>
+<td style="text-align: left;">CONFIRMED</td>
+<td style="text-align: right;">900006</td>
+<td style="text-align: left;">The Secret History (Vintage Classics)</td>
+<td style="text-align: left;">Donna Tartt</td>
+<td style="text-align: left;">Tartt, Donna</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">=“1400031702”</td>
+<td style="text-align: left;">=“9781400031702”</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">4.12</td>
+<td style="text-align: left;">Vintage</td>
+<td style="text-align: left;">Paperback</td>
+<td style="text-align: right;">576</td>
+<td style="text-align: right;">2004</td>
+<td style="text-align: right;">1992</td>
+<td style="text-align: left;">2025-01-03</td>
+<td style="text-align: left;">2024-12-15</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">the secret history</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ADA0D938-47D5-A425-7F70-B977B7486DEE</td>
+<td style="text-align: left;">The Secret History</td>
+<td style="text-align: left;">2025-01-03 22:11:44</td>
+<td style="text-align: left;">2025-01-03 22:29:44</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">2025-01-03 22:34:22</td>
+<td style="text-align: left;">CONFIRMED</td>
+<td style="text-align: right;">900006</td>
+<td style="text-align: left;">The Secret History (Vintage Classics)</td>
+<td style="text-align: left;">Donna Tartt</td>
+<td style="text-align: left;">Tartt, Donna</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">=“1400031702”</td>
+<td style="text-align: left;">=“9781400031702”</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">4.12</td>
+<td style="text-align: left;">Vintage</td>
+<td style="text-align: left;">Paperback</td>
+<td style="text-align: right;">576</td>
+<td style="text-align: right;">2004</td>
+<td style="text-align: right;">1992</td>
+<td style="text-align: left;">2025-01-03</td>
+<td style="text-align: left;">2024-12-15</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">the secret history</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">010627B9-8BE5-3E1C-661B-E22B65DEDBB8</td>
+<td style="text-align: left;">The Story of A New Name</td>
+<td style="text-align: left;">2025-01-04 03:00:54</td>
+<td style="text-align: left;">2025-01-04 03:38:54</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">2025-01-04 03:43:38</td>
+<td style="text-align: left;">CONFIRMED</td>
+<td style="text-align: right;">900001</td>
+<td style="text-align: left;">The Story of a New Name (Neapolitan Novels, #2)</td>
+<td style="text-align: left;">Elena Ferrante</td>
+<td style="text-align: left;">Ferrante, Elena</td>
+<td style="text-align: left;">Ann Goldstein</td>
+<td style="text-align: left;">=“1609450786”</td>
+<td style="text-align: left;">=“9781609450786”</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">4.46</td>
+<td style="text-align: left;">Europa Editions</td>
+<td style="text-align: left;">Paperback</td>
+<td style="text-align: right;">471</td>
+<td style="text-align: right;">2012</td>
+<td style="text-align: right;">2012</td>
+<td style="text-align: left;">2025-02-18</td>
+<td style="text-align: left;">2024-12-30</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">the story of a new name</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">032626A0-2265-D055-D033-78363E96CEDF</td>
+<td style="text-align: left;">The Secret History</td>
+<td style="text-align: left;">2025-01-14 21:38:01</td>
+<td style="text-align: left;">2025-01-14 22:19:01</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">2025-01-14 22:22:14</td>
+<td style="text-align: left;">CONFIRMED</td>
+<td style="text-align: right;">900006</td>
+<td style="text-align: left;">The Secret History (Vintage Classics)</td>
+<td style="text-align: left;">Donna Tartt</td>
+<td style="text-align: left;">Tartt, Donna</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">=“1400031702”</td>
+<td style="text-align: left;">=“9781400031702”</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">4.12</td>
+<td style="text-align: left;">Vintage</td>
+<td style="text-align: left;">Paperback</td>
+<td style="text-align: right;">576</td>
+<td style="text-align: right;">2004</td>
+<td style="text-align: right;">1992</td>
+<td style="text-align: left;">2025-01-03</td>
+<td style="text-align: left;">2024-12-15</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">read</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">the secret history</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="filter-dataset-by-time-window-month-quarter-year" class="level2">
+<h2 class="anchored" data-anchor-id="filter-dataset-by-time-window-month-quarter-year">Filter Dataset by Time Window (Month / Quarter / Year)</h2>
+<p>Because my sample calendar dataset only includes reading sessions from 2025, filtering to “this year” is straightforward.</p>
+<p>In a real setup, though, you’ll likely have multiple years of logs—and you might want to zoom in on a narrower window, like March 2025 or a specific quarter.</p>
+<p>Below, I use a small helper function to make period-based filtering (monthly, quarterly, yearly) simple and reusable.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>make_period_sessions <span class="ot">&lt;-</span> <span class="cf">function</span>(start_date, end_date, <span class="at">label =</span> <span class="st">""</span>) {</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  sessions <span class="ot">&lt;-</span> reading_df <span class="sc">%&gt;%</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>      start <span class="sc">&gt;=</span> <span class="fu">as.POSIXct</span>(start_date, <span class="at">tz =</span> <span class="st">"America/New_York"</span>),</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>      start <span class="sc">&lt;</span>  <span class="fu">as.POSIXct</span>(end_date,   <span class="at">tz =</span> <span class="st">"America/New_York"</span>)</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">label =</span> label, <span class="at">sessions =</span> sessions)</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="pick-a-month" class="level3">
+<h3 class="anchored" data-anchor-id="pick-a-month">Pick a month</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>month_out <span class="ot">&lt;-</span> <span class="fu">make_period_sessions</span>(<span class="st">"2025-03-01"</span>, <span class="st">"2025-04-01"</span>, <span class="st">"March 2025"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="pick-a-quarter" class="level3">
+<h3 class="anchored" data-anchor-id="pick-a-quarter">Pick a quarter</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>quarter_out <span class="ot">&lt;-</span> <span class="fu">make_period_sessions</span>(<span class="st">"2025-04-01"</span>, <span class="st">"2025-07-01"</span>, <span class="st">"Q2 2025"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="pick-a-year" class="level3">
+<h3 class="anchored" data-anchor-id="pick-a-year">Pick a year</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>year_out <span class="ot">&lt;-</span> <span class="fu">make_period_sessions</span>(<span class="st">"2025-01-01"</span>, <span class="st">"2026-01-01"</span>, <span class="st">"Year 2025"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 
 
 </section>

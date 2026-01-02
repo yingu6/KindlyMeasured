@@ -1,11 +1,43 @@
 ---
-title: "Building a Reading Time Tracker [2]"
+title: "Kindly Measured Reading [2/3]: The Data"
 date: 2025-12-31
 categories: [reading, tracking, shortcuts, calendar, r, rmarkdown]
-description: "Logging reading sessions on IOS devices, exporting Calendar data, and analyzing and reporting data in Rmarkdown."
+description: "From .ics and Goodreads CSV to a clean dataset -- what’s included, what’s missing, and how I join them"
 ---
 
-In this post, I’ll explore the data from the Reading Time Tracker I built in the previous post—specifically, how to export the calendar logs as an `.ics` file, import them into R, and do the analysis. 
+In the previous post, I talked about how I built a lightweight **Reading Time Tracker** (Shortcuts → Calendar) so each reading session gets logged automatically.
+
+In this post, I’ll walk through how to export calendar events as an `.ics` file, export your Goodreads library as a `.csv`, and then import and review both in R. The goal is to end up with a clean, analysis-ready dataset where:
+
+- the **Calendar data** tells me *when* I read (session-level start/end times)
+- the **Goodreads data** tells me *what* I read (book-level metadata like author/ISBN/shelf/ratings)
+
+Along the way, I’ll point out what each source includes (and what it doesn’t), and show a few simple, general cleaning steps needed to line up book titles across the two exports. In the following post, I’ll use the cleaned data to summarize and visualize reading time patterns.
+
+::: {.callout-note}
+## At a glance
+
+- Export Calendar `.ics` and import into R
+- Export Goodreads `.csv` and import into R
+- Data prep 
+- Merge into one complete dataset
+- Filter by a time window (month / quarter / year)
+:::
+
+::: {.callout-note}
+## Downloadable files
+
+If you'd like to follow along, here are the files used in this post:
+
+- Sample calendar dataset: `calendar_df.rds`  
+  [Download](data/calendar_df.rds)
+
+- Sample Goodreads dataset: `goodreads_df.rds`  
+  [Download](data/goodreads_df.rds)
+
+:::
+
+
 
 ## Exporting `.ics` from Calendar
 
@@ -17,33 +49,33 @@ In this section, I’ll walk through exporting the `.ics` file from both Apple C
 
 Both Apple Calendar and Google Calendar let you export an entire calendar. In Apple Calendar, the exact UI varies slightly by macOS version, but the workflow is roughly the same:
 
-1. Open the **Calendar** app on your Mac  
-2. In the left sidebar, find and select the dedicated calendar (e.g., **Reading2026**)  
-3. Use the top menu: **File → Export → Export…** to save that calendar as an `.ics` file  
+1.  Open the **Calendar** app on your Mac\
+2.  In the left sidebar, find and select the dedicated calendar (e.g., **Reading2026**)\
+3.  Use the top menu: **File → Export → Export…** to save that calendar as an `.ics` file
 
-### Export from Google Calendar 
+### Export from Google Calendar
 
 Exporting an `.ics` file from Google Calendar is also straightforward:
 
-1. Open **Google Calendar** in a browser  
-2. In the left sidebar, hover over the calendar (e.g., **Reading2026**), click the **⋮** menu (or right-click) and choose **Settings and sharing**  
-3. Scroll to **Export calendar** and download the `.ics` file  
+1.  Open **Google Calendar** in a browser\
+2.  In the left sidebar, hover over the calendar (e.g., **Reading2026**), click the **⋮** menu (or right-click) and choose **Settings and sharing**\
+3.  Scroll to **Export calendar** and download the `.ics` file
 
 ### A small quirk: Apple vs. Google `.ics` data
 
 After importing both `.ics` files into R, I noticed that the Apple Calendar `.ics` sometimes includes extra rows/fields that are harder to parse cleanly and can introduce edge-case issues. I looked into this issue briefly but couldn't find any documentation or discussions that explain what might have led to this issue.
 
-In comparison, the Google Calendar data is cleaner. To keep the project moving, I’ll use the **Google Calendar** `.ics` file as the example dataset for the importing and analysis steps in the rest of this post.
+In my case, the Google Calendar export was easier to work with. To keep things simple, I’ll use the Google Calendar `.ics` file as the example dataset for the importing and analysis steps in the rest of this post.
 
 
 ## Importing `.ics` into R
 
 Once you have an `.ics` file, the next step is turning it into a dataframe.
 
-```{r importICS, echo=TRUE, eval=FALSE}
+```{r importCalendar, echo=TRUE, eval=FALSE}
 
 #####
-#Load the packages needed for retreiving the data
+#Load the packages needed for retrieving the data
 #####
 
 # Install the packages if they aren't yet
@@ -62,21 +94,19 @@ invisible(lapply(pkgs, library, character.only = TRUE))
 ics_path <- "ENTER YOUR ICS FILE PATH HERE"
 
 #####
-# Read .ics (VEVENT entries)
+# Read .ics file
 #####
 ics_raw <- ical_parse_df(ics_path)
 
 # Make it a tibble for nicer printing
-reading_df <- as_tibble(ics_raw)
+calendar_df <- as_tibble(ics_raw)
 
 ```
 
+## What’s in the Calendar Dataset
 
-
-## What’s in the `.ics` Dataset 
-
-```{r make-dummy-reading-df, message=FALSE, warning=FALSE, echo=FALSE, eval=FALSE}
-# Dummy data similar to your reading_df (uid/summary/start/end/description/last.modified/status)
+```{r make-sample-calendar-df, message=FALSE, warning=FALSE, echo=FALSE, eval=FALSE}
+# Sample data similar to your reading_df (uid/summary/start/end/description/last.modified/status)
 
 pkgs <- c("tibble", "dplyr")
 missing <- pkgs[!pkgs %in% rownames(installed.packages())]
@@ -85,15 +115,15 @@ invisible(lapply(pkgs, library, character.only = TRUE))
 
 set.seed(42)
 
-n <- 120  # number of dummy sessions
+n <- 120  # number of sample sessions
 
 # A small book list
 books <- c(
-  "Book1: The Story of A New Name",
-  "Book2: The Kite Runner",
-  "Book3: Project Hail Mary",
-  "Book4: The Secret History",
-  "Book5: Guns, Germs, and Steel"
+  "The Story of A New Name",
+  "The Kite Runner",
+  "Project Hail Mary",
+  "The Secret History",
+  "Guns, Germs, and Steel"
 )
 
 # Generate random start times across 2025-01-01 to 2025-12-31 (US East)
@@ -125,7 +155,7 @@ make_uid <- function() {
 }
 uids <- replicate(n, make_uid())
 
-reading_df <- tibble(
+calendar_df <- tibble(
   uid           = uids,
   summary       = sample(books, n, replace = TRUE),
   start         = start_times,
@@ -136,99 +166,827 @@ reading_df <- tibble(
 ) |>
   arrange(start)
 
-# Show structure + peek
-# str(reading_dummy)
-# head(reading_dummy, 10)
 
 # Save to project folder
-saveRDS(reading_df, "data/reading_df.rds")
+saveRDS(calendar_df, "/Users/yg5ca/MyWebsite/data/calendar_df.rds")
 
-# confirm
-file.info("data/reading_dummy.rds")[, c("size", "mtime")]
 
 
 ```
 
-```{r loaddata, echo=FALSE}
-reading_df <- readRDS(here::here("data", "reading_df.rds"))
+```{r load-calendar-data, echo=FALSE}
+calendar_df <- readRDS(here::here("data", "calendar_df.rds"))
 ```
 
-Now let's take a look at what fields the calendar dataset provides.(I've created a [dummy dataset](data/reading_df.rds) for showcase purposes.)
+Now let's take a look at what fields the calendar dataset provides. I've created a sample [calendar dataset](data/calendar_df.rds), called `calendar_df`, if you'd like to follow along.
 
+::: {.scroll-container style="overflow-x: scroll;white-space: nowrap;"}
+```{r show-calendar-data, echo=TRUE}
 
-```{r showdata, echo=TRUE}
-#| class-output: hscroll
 #####
-# Show a quick structure preview
+# Show the first 10 rows of the dataset
 #####
-head(reading_df, 5)
+knitr::kable(head(calendar_df, 10))
+
+```
+:::
+
+Below is a quick summary of the fields.
+
+-   `uid` is the unique identifier the calendar application assigns to each event
+-   `summary` comes from the event title. Since I use the title to store the book name, this field effectively contains the book titles.\
+-   `start`is the start timestamp of the event.\
+-   `end`is the end timestamp of the event.\
+-   `description` is the event description. I haven't utilized this field yet, but I may use it later to log reading progress (e.g., page/percentage).\
+-   `last.modified`is the timestamp of the most recent edit to the event. Because there can be a small delay between tapping "Stop" in Shortcuts and the event being written into the calendar, this value often reflects when the event was created/saved (not necessarily the exact end time).\
+-   `status` indicates event status. Common values include `CONFIRMED`, `TENTATIVE`, `CANCELLED`. In my workflow, events created via Shortcuts show up as `CONFIRMED`.
+
+## Exporting Library Data (`.csv`) from Goodreads
+
+Goodreads lets readers export their entire library (including information such as book titles, ISBN, shelves/status, ratings, and reading dates) as a `.csv` file. This ends up being a convenient companion dataset to the Calendar dataset: Calendar tells me when I read, and Goodreads describe further what I read and whether I finished it.
+
+Here’s how to export the file:
+
+1.  Open [**Goodreads**](https://www.goodreads.com/) in a browser
+2.  On the **My Books** page, look for **Tools** in the left sidebar
+3.  Click **Import and export**
+4.  Under **Export**, click **Export Library**. Goodreads will generate the file in the background and generate a link called "Your export from \[date\] - \[time\]" below the Export Library button.
+5.  Refresh the page and download the `.csv` file.
+
+For file management purposes, I usually rename the file, like `goodreads_library_export_20251231.csv`, so it's time-stamped.
+
+## Importing Library Data into R
+
+```{r importGoodreads, echo=TRUE, eval=FALSE}
+
+##### 
+#Load the packages needed for retreiving the data 
+#####
+
+# Install the packages if they aren't yet
+
+pkgs <- c("readr", "stringr", "janitor")
+
+missing <- pkgs[!pkgs %in% rownames(installed.packages())]
+if (length(missing) > 0) {
+  install.packages(missing, dependencies = TRUE)
+}
+
+invisible(lapply(pkgs, library, character.only = TRUE))
+
+##### 
+# Point to Goodreads file
+##### 
+
+goodreads_path <- "ENTER YOUR CSV FILE PATH HERE"
+
+#####
+# Read .csv file
+#####
+goodreads_raw <- read_csv(goodreads_path, show_col_types = FALSE)
+
+# Make it a tibble for nicer printing
+goodreads_df <- as_tibble(goodreads_raw)
+
+```
+
+## What's in the Goodreads Dataset
+
+```{r make-sample-goodreadsdf, message=FALSE, warning=FALSE, echo=FALSE, eval=FALSE}
+library(tibble)
+library(dplyr)
+goodreads_df <- tibble::tibble(
+  `Book Id` = c(
+    900001, 900002, 900003, 900004,
+    900005, 900006, 900007, 900008,
+    900009, 900010, 900011, 900012,
+    900013, 900014
+  ),
+
+  `Title` = c(
+    "The Story of a New Name (Neapolitan Novels, #2)",
+    "The Kite Runner",
+    "The Kite Runner",                                   # duplicate
+    "Project Hail Mary (Hardcover)",
+    "Project Hail Mary (Paperback)",                     # duplicate (different format)
+    "The Secret History (Vintage Classics)",
+    "Guns, Germs, and Steel: The Fates of Human Societies",
+    "Small Things Like These: A Novel",
+    "Atomic Habits: An Easy & Proven Way to Build Good Habits & Break Bad Ones",
+    "Educated: A Memoir (Reese's Book Club)",
+    "Pachinko",
+    "Tomorrow, and Tomorrow, and Tomorrow (A Novel)",
+    "Braiding Sweetgrass: Indigenous Wisdom, Scientific Knowledge, and the Teachings of Plants",
+    "My Brilliant Friend (Neapolitan Novels, #1)"
+  ),
+
+  `Author` = c(
+    "Elena Ferrante",
+    "Khaled Hosseini",
+    "Khaled Hosseini",
+    "Andy Weir",
+    "Andy Weir",
+    "Donna Tartt",
+    "Jared Diamond",
+    "Claire Keegan",
+    "James Clear",
+    "Tara Westover",
+    "Min Jin Lee",
+    "Gabrielle Zevin",
+    "Robin Wall Kimmerer",
+    "Elena Ferrante"
+  ),
+
+  `Author l-f` = c(
+    "Ferrante, Elena",
+    "Hosseini, Khaled",
+    "Hosseini, Khaled",
+    "Weir, Andy",
+    "Weir, Andy",
+    "Tartt, Donna",
+    "Diamond, Jared",
+    "Keegan, Claire",
+    "Clear, James",
+    "Westover, Tara",
+    "Lee, Min Jin",
+    "Zevin, Gabrielle",
+    "Kimmerer, Robin Wall",
+    "Ferrante, Elena"
+  ),
+
+  `Additional Authors` = c(
+    "Ann Goldstein",
+    NA, NA,
+    NA, NA,
+    NA,
+    NA,
+    NA,
+    NA,
+    NA,
+    NA,
+    NA,
+    NA,
+    "Ann Goldstein"
+  ),
+
+  # Keep the Excel-ish ISBN format you may see in real exports
+  `ISBN` = c(
+    "=\"1609450786\"",
+    "=\"159463193X\"",
+    "=\"159463193X\"",
+    "=\"0593135202\"",
+    "=\"0593135202\"",
+    "=\"1400031702\"",
+    "=\"0393317552\"",
+    "=\"0802158749\"",
+    "=\"0735211299\"",
+    "=\"0399590501\"",
+    "=\"1455563937\"",
+    "=\"0525535278\"",
+    "=\"1571313567\"",
+    "=\"1609450783\""
+  ),
+
+  `ISBN13` = c(
+    "=\"9781609450786\"",
+    "=\"9781594631931\"",
+    "=\"9781594631931\"",
+    "=\"9780593135204\"",
+    "=\"9780593135204\"",
+    "=\"9781400031702\"",
+    "=\"9780393317558\"",
+    "=\"9780802158741\"",
+    "=\"9780735211292\"",
+    "=\"9780399590504\"",
+    "=\"9781455563937\"",
+    "=\"9780525535275\"",
+    "=\"9781571313560\"",
+    "=\"9781609450783\""
+  ),
+
+  `My Rating` = c(5, 4, 4, NA, NA, 5, 4, NA, 4, 5, 4, 5, 5, 5),
+  `Average Rating` = c(4.46, 4.32, 4.32, 4.51, 4.51, 4.12, 4.05, 4.09, 4.35, 4.47, 4.32, 4.10, 4.50, 4.19),
+
+  `Publisher` = c(
+    "Europa Editions",
+    "Riverhead Books",
+    "Riverhead Books",
+    "Ballantine Books",
+    "Ballantine Books",
+    "Vintage",
+    "W. W. Norton & Company",
+    "Grove Press",
+    "Avery",
+    "Random House",
+    "Grand Central Publishing",
+    "Knopf",
+    "Milkweed Editions",
+    "Europa Editions"
+  ),
+
+  `Binding` = c(
+    "Paperback",
+    "Paperback",
+    "Kindle Edition",
+    "Hardcover",
+    "Paperback",
+    "Paperback",
+    "Paperback",
+    "Hardcover",
+    "Hardcover",
+    "Hardcover",
+    "Paperback",
+    "Hardcover",
+    "Paperback",
+    "Paperback"
+  ),
+
+  `Number of Pages` = c(471, 371, 371, 496, 496, 576, 528, 128, 320, 352, 496, 416, 408, 331),
+  `Year Published` = c(2012, 2004, 2004, 2021, 2022, 2004, 1997, 2021, 2018, 2018, 2017, 2022, 2013, 2012),
+  `Original Publication Year` = c(2012, 2003, 2003, 2021, 2021, 1992, 1997, 2021, 2018, 2018, 2017, 2022, 2013, 2011),
+
+  # In real exports these are often strings like "2025/08/29"
+  `Date Read` = c(
+    "2025/02/18",
+    "2025/07/10",
+    "2025/07/10",
+    NA,
+    NA,
+    "2025/01/03",
+    "2025/11/20",
+    NA,
+    "2023/01/15",
+    "2022/06/05",
+    "2024/03/12",
+    "2024/08/20",
+    NA,
+    NA
+  ),
+
+  `Date Added` = c(
+    "2024/12/30",
+    "2024/12/29",
+    "2024/12/29",
+    "2025/01/20",
+    "2025/01/20",
+    "2024/12/15",
+    "2022/10/01",
+    "2023/12/29",
+    "2022/12/30",
+    "2022/01/10",
+    "2024/01/05",
+    "2024/06/01",
+    "2024/11/10",
+    "2025/12/20"
+  ),
+
+  `Bookshelves` = c(
+    "read",
+    "read",
+    "read",
+    "currently-reading",
+    "currently-reading",
+    "read",
+    "read",
+    "to-read",
+    "read",
+    "read",
+    "read",
+    "read",
+    "currently-reading",
+    "currently-reading"
+  ),
+
+  `Bookshelves with positions` = NA_character_,
+  `Exclusive Shelf` = c(
+    "read",
+    "read",
+    "read",
+    "currently-reading",
+    "currently-reading",
+    "read",
+    "read",
+    "to-read",
+    "read",
+    "read",
+    "read",
+    "read",
+    "currently-reading",
+    "currently-reading"
+  ),
+
+  `My Review` = NA_character_,
+  `Spoiler` = NA_character_,
+  `Private Notes` = NA_character_,
+  `Read Count` = c(1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0),
+  `Owned Copies` = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+)
+
+
+
+# Save to project folder
+saveRDS(goodreads_df, "/Users/yg5ca/MyWebsite/data/goodreads_df.rds")
+
+
+```
+
+```{r load-goodreads-data, echo=FALSE, message=FALSE}
+library(dplyr)
+library(stringr)
+library(tidyr)
+library(lubridate)
+library(tibble)
+goodreads_df <- readRDS(here::here("data", "goodreads_df.rds"))
+```
+
+Similarly, I've created a sample [Goodreads library dataset](data/goodreads_df.rds), called `goodreads_df`, so we can explore it together. 
+
+Before we dive in, we’ll clean the column names. Goodreads uses spaces and title case (e.g., `Book Id`, `Date Read`), so I convert them to snake_case (e.g., `book_id`, `date_read`) to make the rest of the code easier to read.
+
+Goodreads also stores dates as strings (often like `YYYY/MM/DD`). I’ll convert them into proper Date values `YYYY-MM-DD` so they’re easier to filter and summarize later.
+
+
+```{r goodreadsSnakeCase, echo=TRUE}
+
+goodreads_df <- goodreads_df %>%
+  janitor::clean_names() %>%
+  mutate(
+    date_read  = lubridate::ymd(stringr::str_replace_all(date_read, "/", "-")),
+    date_added = lubridate::ymd(stringr::str_replace_all(date_added, "/", "-"))
+  )
 
 ```
 
 
-```{css, echo=FALSE}
-.hscroll {
-  overflow-x: auto;
-  white-space: nowrap;
+Now, let's take a look at the fields the Goodreads dataset `goodreads_df` provides:
+
+::: {.scroll-container style="overflow-x: scroll;white-space: nowrap;"}
+```{r show-goodreads-data, echo=TRUE}
+
+#####
+# Show the first 10 rows of the dataset
+#####
+knitr::kable(head(goodreads_df, 10))
+
+```
+:::
+
+Goodreads exports a fairly wide library table.
+
+- `Book Id` — Goodreads’ unique ID for this specific library entry 
+- `Title` — Book title as listed in Goodreads
+- `Author` — Primary author name.
+- `Author l-f` — Author name in “Last, First” format 
+- `Additional Authors` — Co-authors, translators, editors, etc. (when applicable)
+- `ISBN` — 10-digit ISBN for the edition 
+- `ISBN13` — 13-digit ISBN for the edition 
+- `My Rating` — Your personal rating (blank if you didn’t rate it)
+- `Average Rating` — Goodreads community average rating
+- `Publisher` — Publisher of the specific edition in the export
+- `Binding` — Format of the edition (e.g., hardcover, paperback, Kindle)
+- `Number of Pages` — Page count for that edition.
+- `Year Published` — Publication year for that edition (can differ across editions)
+- `Original Publication Year` — First publication year of the work 
+- `Date Read` — Date you marked the book as finished (blank if not finished).
+- `Date Added` — Date you added the book to your Goodreads library.
+- `Bookshelves` — All shelves/tags you assigned (can include multiple, comma-separated).
+- `Bookshelves with positions` — Shelf ordering/position metadata (useful if you use shelf ranking).
+- `Exclusive Shelf` — The primary status shelf (typically one of `read`, `currently-reading`, `to-read`).
+- `My Review` — Your written review text (if any).
+- `Spoiler` — Indicates whether your review is marked as containing spoilers.
+- `Private Notes` — Your private notes (not public; may be blank if unused).
+- `Read Count` — How many times you’ve marked the book as read.
+- `Owned Copies` — Number of copies you own (if you track ownership).
+
+Before we dive into any analysis, let's do a quick sanity check: are there any books with missing titles, or any duplicate entries in the library data?  
+
+```{r inspect-goodreadsdf1, echo=TRUE}
+# Check for missing + duplicated titles (summary only)
+
+if ("title" %in% names(goodreads_df)) {
+
+  title_check <- goodreads_df %>%
+    dplyr::mutate(
+      title_raw = title,
+      title_is_missing = is.na(title_raw) | stringr::str_squish(title_raw) == ""
+    )
+
+  missing_n <- sum(title_check$title_is_missing)
+  unique_n  <- dplyr::n_distinct(title_check$title_raw[!title_check$title_is_missing])
+
+  dup_summary <- title_check %>%
+    dplyr::filter(!title_is_missing) %>%
+    dplyr::count(title_raw, name = "n") %>%
+    dplyr::filter(n > 1) %>%
+    dplyr::summarise(
+      n_duplicated_titles = dplyr::n(),          # how many titles appear more than once
+      n_duplicate_rows    = sum(n) - dplyr::n()  # extra rows beyond the first copy
+    )
+
+  n_dup_titles <- dup_summary$n_duplicated_titles
+  n_dup_rows   <- dup_summary$n_duplicate_rows
+
+  cat(glue::glue(
+    "Missing titles: {missing_n}\n",
+    "Unique (non-missing) titles: {unique_n}\n",
+    "Titles with duplicates: {n_dup_titles}\n",
+    "Extra duplicate rows: {n_dup_rows}\n"
+  ))
+
+} 
+
+```
+
+Now that we have a clearer picture of what’s in the dataset, we can start cleaning the data.
+
+## Cleaning the Goodreads Dataset - Prep work
+
+As usual, we will first load a few packages we’ll use throughout the cleaning + matching process.
+```{r goodreadsdfPackages, echo=TRUE, eval=FALSE}
+#####
+# Packages (install if missing)
+#####
+pkgs <- c("dplyr", "stringr", "tidyr", "lubridate", "tibble")
+missing <- pkgs[!pkgs %in% rownames(installed.packages())]
+if (length(missing) > 0) install.packages(missing, dependencies = TRUE)
+invisible(lapply(pkgs, library, character.only = TRUE))
+
+```
+
+### Clean book titles into a consistent format
+
+A very common issue is that the *same* book title can be written slightly differently across datasets.
+For example, the Goodreads export may include extra edition or series text:
+
+- `Project Hail Mary (Hardcover)`
+- `My Brilliant Friend (Neapolitan Novels, #1)`
+
+But, in the calendar tracker, I usually type a shorter name like `Project Hail Mary` and `My Brilliant Friend`.
+
+To make matching easier, we’ll create a minimal title-cleaning function. I’m keeping it intentionally simple so it’s easy to adapt. 
+
+Rules:
+- lower case
+- remove trailing parenthetical info like `(Hardcover)` or `(Neapolitan Novels, #2)`
+- remove punctuation
+- squish extra spaces
+
+```{r goodreadsdfFunctions1, echo=TRUE}
+
+#####
+# Helper: minimal book title normalizer
+#####
+
+clean_title <- function(x) {
+  x %>%
+    str_to_lower() %>%
+    # remove trailing parenthetical at the end of the title
+    str_replace("\\s*\\(.*?\\)\\s*$", "") %>%
+    # remove punctuation/symbols
+    str_replace_all("[^a-z0-9\\s]", " ") %>%
+    # collapse multiple spaces
+    str_squish()
+}
+
+```
+
+
+We’ll add `title_clean`, which we’ll use for both:
+- duplicate detection
+- title matching
+
+::: {.scroll-container style="overflow-x: scroll;white-space: nowrap;"}
+```{r goodreadsdfPrep, echo=TRUE}
+
+goodreads_prepped <- goodreads_df %>%
+  mutate(title_clean = clean_title(title))
+
+goodreads_prepped %>%
+  select(book_id, title, title_clean, author, exclusive_shelf, date_read) %>%
+  head(10) %>%
+  knitr::kable()
+  
+```
+::: 
+
+### Spot duplicates in the Goodreads Dataset 
+
+Another common issue: the Goodreads library export can contain **duplicate entries** for the “same” book.
+This often happens when you accidentally add multiple editions (hardcover vs paperback, different publishers, etc.).
+
+Here’s a simple rule of thumb:
+
+If two rows share the same **cleaned title** *and* **author**, we treat them as a duplicate candidate set.
+
+```{r goodreadsdfFunctions2, echo=TRUE}
+####
+# Helper: identify potential duplicates in Goodreads
+####
+
+find_goodreads_dupes <- function(gr) {
+  gr %>%
+    group_by(title_clean, author) %>%
+    filter(n() > 1) %>%
+    ungroup() %>%
+    arrange(title_clean, author, book_id)
 }
 ```
 
 
-Below is a quick summary of the fields.
+Because duplicates can happen for different reasons, I recommend reviewing them one by one before deleting anything.
 
-- `uid` is the unique identifier the calendar application assigns to each event
-- `summary` comes from the event title. Since I use the title to store the book name, this field effectively contains the book titles.  
-- `start`is the start timestamp of the event.  
-- `end`is the end timestamp of the event.  
-- `description` is the event description. I haven't utilized this field yet, but I may use it later to log reading progress (e.g., page/percentage).  
-- `last.modified`is the timestamp of the most recent edit to the event. Because there can be a small delay between tapping "Stop" in Shortcuts and the event being written into the calendar, this value often reflects when the event was created/saved (not necessarily the exact end time).  
-- `status` indicates event status. Common values include `CONFIRMED`, `TENTATIVE`, `CANCELLED`. In my workflow, events created via Shortcuts show up as `CONFIRMED`.
+The following process is to 
+1) **detect** duplicates
+2) **print** them
+3) **manually decide** which `book_id` to remove
 
+```{r goodreadsdfDupes, echo=TRUE, eval=FALSE}
 
-## Hypotheses to Explore (What I’m Curious About)
+gr_dupes <- find_goodreads_dupes(goodreads_prepped)
 
-Now that I understand what fields the calendar export provides, the next step is deciding what I want to learn—and what additional data (if any) would make the analysis more meaningful.
-
-Below is a list of questions I’m interested in answering. Most of them come with implicit assumptions about my reading habits. By collecting my own data and analyse them, I can see which assumptions hold up and which don't. I also hope to find a few patterns that I didn't anticipate. That’s what I enjoy the most about a data-driven approach: it can surface patterns I wouldn’t notice otherwise, and it helps me check my own biases with something more concrete than memory.
-
-As I worked through these questions, I also realized I’ll need a bit more data to answer them well:
-
-- **Reading progress:** I’ll likely add a simple progress field to the tracker (e.g., percentage or pages) so I can study completion and drop-off points.
-- **Book metadata:** I’ll pull basic metadata (e.g., genre, length/word count) from another source. I will document that process in a separate post.
-
-### When do I read?
-
-First, I want to know some basic, time-related stats. 
-
-1. **Consistency:** Do I read regularly, or in bursts?
-2. **Timing:** What times of day does reading naturally happen?
-3. **Weekday vs weekend:** Does reading cluster on certain days?
-4. **Seasonality:** Are there any month-to-month (or seasonal) shifts? 
-
-### How do I move through books?
-
-These focus on how I move through books. Some of these require basic book metadata (e.g., genre, length), which I’ll add later.
-
-#### For books I finish
-
-1. **Book overview:** How many books did I read, what genres were they, and how long did each one take?
-2. **Focus vs. switching:** Do I tend to read one book at a time, or bounce between several?
-3. **Pace by book:** How long does it typically take me to finish a book (total hours and number of sessions)?
-4. **Engagement pattern:** Which books show many short sessions vs. fewer long sessions?
-5. **Switching behavior:** If I switch books mid-stream, is it random—or does it happen after long gaps, short sessions, or late-night reading?
-6. **Genre differences:** Do I read certain genres at different times of day or in different session lengths?
-
-#### For books I don't finish
-
-1. **Abandonment point:** How far do I typically get before stopping? 
-2. **The “fade-out” signal:** Do unfinished books show a common pattern before I drop them (shrinking session length, longer gaps, switching to other books)?
-
-### What predicts momentum?
-
-1. **What predicts “stickiness":** What factors correlate with steady progress—time of day, session length, weekday/weekend, or genre?
-2. **Completion likelihood:** Are some genres more likely to be finished vs. abandoned?
+cat("=== Candidate duplicates in Goodreads (same cleaned title + author) ===
+")
+if (nrow(gr_dupes) == 0) {
+  cat("No duplicates detected.
+")
+} else {
+  gr_dupes %>%
+    select(book_id, title, author, isbn, isbn13, number_of_pages, date_read, date_added, exclusive_shelf)%>%
+    knitr::kable()
+  
+}
+```
 
 
-<hr>
+After you review the printed table above, choose which IDs you want to remove.
 
-<p>This work is licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> <img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="CC" style="max-width: 1em;max-height:1em;margin-left: .2em;"/> <img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt="BY" style="max-width: 1em;max-height:1em;margin-left: .2em;"/> <img src="https://mirrors.creativecommons.org/presskit/icons/sa.svg" alt="SA" style="max-width: 1em;max-height:1em;margin-left: .2em;"/></p>
+```{r goodreadsdfDedup, echo=TRUE}
+
+drop_book_ids <- c(
+   900003, 900005 #[replace with the IDs you want to remove]
+)
+
+goodreads_dedup <- goodreads_prepped %>%
+  filter(!book_id %in% drop_book_ids)
+
+dupes_left <- goodreads_dedup %>%
+  count(title_clean, author, name = "n") %>%
+  filter(n > 1)
+
+if (nrow(dupes_left) == 0) {
+  cat("No duplicate candidates remain after de-duplication.")
+} else {
+  knitr::kable(dupes_left,
+              caption = "Remaining duplicate candidates after de-duplication")
+}
+```
+
+As the result shows, we have elimintated the duplicated book titles/rows. 
+
+
+## Merge Calendar and Goodreads Datasets
+
+### Match calendar book names to Goodreads titles
+
+Now we’re ready for the key step: **link the calendar reading logs to the Goodreads library**.
+
+Because calendar book names are manually typed, I recommend, when you create the book list in Shortcuts, keeping them as close as possible to the titles in Goodreads. However, Goodreads book titles can be long, including information like series and edition notes. So, I'm using a function to do the matching with the following rule:
+
+If the **cleaned calendar title** is contained in the **cleaned Goodreads title**, treat it as a match candidate. 
+
+```{r goodreadsdfMatching1, echo=TRUE}
+
+find_match_candidates <- function(calendar_df, gr) {
+  calendar_titles <- calendar_df %>%
+    distinct(summary) %>%
+    filter(!is.na(summary), summary != "") %>%
+    transmute(
+      calendar_title = summary,
+      calendar_clean = clean_title(calendar_title)
+    )
+
+  candidates <- calendar_titles %>%
+    tidyr::crossing(
+      gr %>% select(book_id, title, author, title_clean)
+    ) %>%
+    filter(str_detect(title_clean, fixed(calendar_clean))) %>%
+    arrange(calendar_title, title)
+
+  list(calendar_titles = calendar_titles, candidates = candidates)
+}
+```
+
+Then, we use the following process to review the matches and/or mismatches. 
+
+- If there is **exactly 1 match**, we can auto-link it.
+- If there are **0 matches**, the calendar title likely needs to be edited (or mapped manually).
+- If there are **multiple matches**, it usually means the calendar title is **too generic** (e.g., a short substring that appears in more than one Goodreads title) *or* your Goodreads library still has multiple editions. In practice, if you keep your calendar title reasonably specific (and you’ve removed duplicates), this should rarely happen — but we’ll still handle it gracefully.
+
+::: {.scroll-container style="overflow-x: scroll;white-space: nowrap;"}
+```{r goodreadsdfMatching2, echo=TRUE}
+
+build_title_map <- function(calendar_df, gr) {
+  out <- find_match_candidates(calendar_df, gr)
+  calendar_titles <- out$calendar_titles
+  candidates <- out$candidates %>%
+    mutate(
+      # Simple tie-breakers (still easy to explain):
+      # 1) Exact match after cleaning
+      # 2) Starts-with match
+      # 3) Otherwise, contains match
+      match_rank = dplyr::case_when(
+        title_clean == calendar_clean ~ 1L,
+        stringr::str_starts(title_clean, calendar_clean) ~ 2L,
+        TRUE ~ 3L
+      ),
+      # Prefer the Goodreads title that is closest in length to the calendar title
+      extra_chars = nchar(title_clean) - nchar(calendar_clean)
+    )
+
+  # For each calendar title, figure out whether there is a single “best” match
+  best_summary <- candidates %>%
+    group_by(calendar_title) %>%
+    summarise(
+      n_candidates = n(),
+      best_rank = min(match_rank),
+      best_extra = min(extra_chars[match_rank == min(match_rank)]),
+      n_best = sum(match_rank == best_rank & extra_chars == best_extra),
+      candidate_list = paste0(book_id, " | ", title, collapse = " ; "),
+      .groups = "drop"
+    )
+
+  coverage <- calendar_titles %>%
+    left_join(best_summary, by = "calendar_title") %>%
+    mutate(
+      n_candidates = dplyr::coalesce(n_candidates, 0L),
+      n_best = dplyr::coalesce(n_best, 0L),
+      status = case_when(
+        n_candidates == 0 ~ "no match (edit calendar title OR map manually)",
+        n_best == 1 ~ "auto-match",
+        TRUE ~ "multiple matches (calendar title too generic OR multiple editions — review)"
+      )
+    ) %>%
+    arrange(desc(n_candidates == 0), desc(status != "auto-match"), calendar_title)
+
+  # Auto-map only when there is exactly one best match
+  auto_map <- candidates %>%
+    inner_join(
+      best_summary %>% filter(n_best == 1) %>%
+        select(calendar_title, best_rank, best_extra),
+      by = "calendar_title"
+    ) %>%
+    filter(match_rank == best_rank, extra_chars == best_extra) %>%
+    arrange(calendar_title, match_rank, extra_chars, book_id) %>%
+    transmute(
+      calendar_title,
+      book_id,
+      goodreads_title = title,
+      match_method = "contained-in (ranked)"
+    )
+
+  manual_map_template <- coverage %>%
+    filter(status != "auto-match") %>%
+    transmute(
+      calendar_title,
+      book_id = NA_integer_,
+      goodreads_title = NA_character_,
+      match_method = "manual",
+      note = status
+    )
+
+  list(
+    coverage = coverage,
+    candidates = candidates,
+    auto_map = auto_map,
+    manual_map_template = manual_map_template
+  )
+}
+
+match_out <- build_title_map(calendar_df, goodreads_dedup)
+
+knitr::kable(match_out$coverage)
+
+```
+:::
+
+If anything shows up as "no match" or "multiple matches", we’ll manually specify the mapping.
+This is also a nice place to show the audience that:
+
+- sometimes it’s easiest to **edit the Shortcut book name**
+- sometimes you just create a tiny mapping table like this
+
+```{r goodreadsdfMatching3, echo=TRUE}
+
+# Anything not "auto-match" needs human attention
+needs_manual <- match_out$coverage %>%
+  dplyr::filter(status != "auto-match")
+
+if (nrow(needs_manual) == 0) {
+  title_map <- match_out$auto_map
+
+} else {
+
+  knitr::kable(needs_manual, caption = "Titles that need manual review")
+
+  # --- Manual mapping table (fill in ONLY if needed) ---
+  manual_map <- tibble::tibble(
+    # calendar_title  = c("..."),
+    # book_id         = c(900001),
+    # goodreads_title = c("..."),
+    # match_method    = c("manual")
+  )
+
+  title_map <- dplyr::bind_rows(
+    match_out$auto_map,
+    manual_map
+  ) %>%
+    dplyr::distinct(calendar_title, .keep_all = TRUE)
+
+  # Optional: warn if you still have gaps after manual mapping
+  still_unmapped <- dplyr::anti_join(
+    match_out$coverage %>% dplyr::select(calendar_title),
+    title_map %>% dplyr::select(calendar_title),
+    by = "calendar_title"
+  )
+
+  if (nrow(still_unmapped) > 0) {
+    cat("\n These calendar titles are still not mapped (add them to manual_map or fix the Shortcut title):\n")
+    print(still_unmapped$calendar_title)
+  }
+}
+
+# Always show the final mapping table used for merging
+knitr::kable(title_map, caption = "Final Title Mapping (calendar → Goodreads)")
+
+```
+
+### Merge the Calendar and Goodreads datasets
+
+Now we can attach Goodreads metadata to each calendar reading session, and I'll call the merged dataset `reading_df`.
+```{r goodreadsdfMerge1, echo=TRUE}
+calendar_matched <- calendar_df %>%
+  left_join(
+    title_map %>% select(calendar_title, book_id),
+    by = c("summary" = "calendar_title")
+  )
+
+# Keep only sessions that successfully matched a Goodreads book
+calendar_matched <- calendar_matched %>%
+  filter(!is.na(book_id))
+
+reading_df <- calendar_matched %>%
+  left_join(
+    goodreads_dedup,
+    by = "book_id"
+  )
+```
+
+Let's take a peek into the datasets
+
+::: {.scroll-container style="overflow-x: scroll;white-space: nowrap;"}
+```{r goodreadsdfMerge2, echo=TRUE}
+reading_df %>%
+  head(8)%>%
+  knitr::kable()
+```
+:::
+
+## Filter Dataset by Time Window (Month / Quarter / Year)
+
+Because my sample calendar dataset only includes reading sessions from 2025, filtering to “this year” is straightforward. 
+
+In a real setup, though, you’ll likely have multiple years of logs—and you might want to zoom in on a narrower window, like March 2025 or a specific quarter.
+
+Below, I use a small helper function to make period-based filtering (monthly, quarterly, yearly) simple and reusable.
+
+```{r readingdfFilterPeriods, echo=TRUE}
+
+make_period_sessions <- function(start_date, end_date, label = "") {
+
+  sessions <- reading_df %>%
+    dplyr::filter(
+      start >= as.POSIXct(start_date, tz = "America/New_York"),
+      start <  as.POSIXct(end_date,   tz = "America/New_York")
+    )
+
+  list(label = label, sessions = sessions)
+}
+```
+
+### Pick a month
+```{r readingdfMonth, echo=TRUE}
+month_out <- make_period_sessions("2025-03-01", "2025-04-01", "March 2025")
+```
+
+### Pick a quarter
+```{r readingdfQuarter, echo=TRUE}
+quarter_out <- make_period_sessions("2025-04-01", "2025-07-01", "Q2 2025")
+```
+
+### Pick a year
+```{r readingdfYear, echo=TRUE}
+year_out <- make_period_sessions("2025-01-01", "2026-01-01", "Year 2025")
+```
+
+
+

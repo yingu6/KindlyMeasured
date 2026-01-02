@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="dcterms.date" content="2025-12-31">
+<meta name="description" content="Turning reading logs into insights – data cleaning and visualizations in Rmarkdown">
 
-<title>multilanguage setup – Kindly Measured</title>
+<title>Kindly Measured Reading [3/3]: The Patterns – Kindly Measured</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -75,8 +77,8 @@ ul.task-list li input[type="checkbox"] {
 
 
 <link rel="stylesheet" href="../styles.css">
-<meta property="og:title" content="multilanguage setup – Kindly Measured">
-<meta property="og:description" content="">
+<meta property="og:title" content="Kindly Measured Reading [3/3]: The Patterns – Kindly Measured">
+<meta property="og:description" content="Turning reading logs into insights – data cleaning and visualizations in Rmarkdown">
 <meta property="og:site_name" content="Kindly Measured">
 </head>
 
@@ -282,8 +284,19 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#hypotheses-to-explore-what-im-curious-about" id="toc-hypotheses-to-explore-what-im-curious-about" class="nav-link active" data-scroll-target="#hypotheses-to-explore-what-im-curious-about">Hypotheses to Explore (What I’m Curious About)</a>
+  <ul class="collapse">
+  <li><a href="#when-do-i-read" id="toc-when-do-i-read" class="nav-link" data-scroll-target="#when-do-i-read">When do I read?</a></li>
+  <li><a href="#how-do-i-move-through-books" id="toc-how-do-i-move-through-books" class="nav-link" data-scroll-target="#how-do-i-move-through-books">How do I move through books?</a></li>
+  <li><a href="#what-predicts-momentum" id="toc-what-predicts-momentum" class="nav-link" data-scroll-target="#what-predicts-momentum">What predicts momentum?</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -291,14 +304,33 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">multilanguage setup</h1>
-</div>
+<h1 class="title">Kindly Measured Reading [3/3]: The Patterns</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">reading</div>
+    <div class="quarto-category">tracking</div>
+    <div class="quarto-category">shortcuts</div>
+    <div class="quarto-category">calendar</div>
+    <div class="quarto-category">r</div>
+    <div class="quarto-category">rmarkdown</div>
+  </div>
+  </div>
 
+<div>
+  <div class="description">
+    Turning reading logs into insights – data cleaning and visualizations in Rmarkdown
+  </div>
+</div>
 
 
 <div class="quarto-title-meta">
 
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">December 31, 2025</p>
+    </div>
+  </div>
   
     
   </div>
@@ -308,14 +340,56 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<!-- https://joelnitta.com/posts/2024-12-06_babelquarto/ -->
-<p>library(quarto) library(babelquarto) library(fs)</p>
-<p>website_dir &lt;- path(“/Users/yg5ca/”, “MyWebsite”) dir_tree(website_dir)</p>
-<!-- https://docs.ropensci.org/babelquarto/reference/register_main_language.html -->
-<p>register_main_language( main_language = “en”, project_path = website_dir )</p>
-<p>register_further_languages(c(“zh”), website_dir)</p>
+<section id="hypotheses-to-explore-what-im-curious-about" class="level2">
+<h2 class="anchored" data-anchor-id="hypotheses-to-explore-what-im-curious-about">Hypotheses to Explore (What I’m Curious About)</h2>
+<p>Now that I reviewed what data are available to me, the next step is deciding what I want to learn—and what additional data (if any) would make the analysis more meaningful.</p>
+<p>Below is a list of questions I’m interested in answering. Most of them come with implicit assumptions about my reading habits. By collecting my own data and analyse them, I can see which assumptions hold up and which don’t. I also hope to find a few patterns that I didn’t anticipate. That’s what I enjoy the most about a data-driven approach: it can surface patterns I wouldn’t notice otherwise, and it helps me check my own biases with something more concrete than memory.</p>
+<section id="when-do-i-read" class="level3">
+<h3 class="anchored" data-anchor-id="when-do-i-read">When do I read?</h3>
+<p>First, I want to know some basic, time-related stats.</p>
+<ol type="1">
+<li><strong>Consistency:</strong> Do I read regularly, or in bursts?</li>
+<li><strong>Timing:</strong> What times of day does reading naturally happen?</li>
+<li><strong>Weekday vs weekend:</strong> Does reading cluster on certain days?</li>
+<li><strong>Seasonality:</strong> Are there any month-to-month (or seasonal) shifts?</li>
+</ol>
+</section>
+<section id="how-do-i-move-through-books" class="level3">
+<h3 class="anchored" data-anchor-id="how-do-i-move-through-books">How do I move through books?</h3>
+<p>These focus on how I move through books. Some of these require basic book metadata (e.g., genre, length), which I’ll add later.</p>
+<section id="for-books-i-finish" class="level4">
+<h4 class="anchored" data-anchor-id="for-books-i-finish">For books I finish</h4>
+<ol type="1">
+<li><strong>Book overview:</strong> How many books did I read, what genres were they, and how long did each one take?</li>
+<li><strong>Focus vs.&nbsp;switching:</strong> Do I tend to read one book at a time, or bounce between several?</li>
+<li><strong>Pace by book:</strong> How long does it typically take me to finish a book (total hours and number of sessions)?</li>
+<li><strong>Engagement pattern:</strong> Which books show many short sessions vs.&nbsp;fewer long sessions?</li>
+<li><strong>Switching behavior:</strong> If I switch books mid-stream, is it random—or does it happen after long gaps, short sessions, or late-night reading?</li>
+<li><strong>Genre differences:</strong> Do I read certain genres at different times of day or in different session lengths?</li>
+</ol>
+</section>
+<section id="for-books-i-dont-finish" class="level4">
+<h4 class="anchored" data-anchor-id="for-books-i-dont-finish">For books I don’t finish</h4>
+<ol type="1">
+<li><strong>Abandonment point:</strong> How far do I typically get before stopping?</li>
+<li><strong>The “fade-out” signal:</strong> Do unfinished books show a common pattern before I drop them (shrinking session length, longer gaps, switching to other books)?</li>
+</ol>
+</section>
+</section>
+<section id="what-predicts-momentum" class="level3">
+<h3 class="anchored" data-anchor-id="what-predicts-momentum">What predicts momentum?</h3>
+<ol type="1">
+<li><strong>What predicts “stickiness”:</strong> What factors correlate with steady progress—time of day, session length, weekday/weekend, or genre?</li>
+<li><strong>Completion likelihood:</strong> Are some genres more likely to be finished vs.&nbsp;abandoned?</li>
+</ol>
+<hr>
+<p>
+This work is licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> <img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="CC" style="max-width: 1em;max-height:1em;margin-left: .2em;"> <img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt="BY" style="max-width: 1em;max-height:1em;margin-left: .2em;"> <img src="https://mirrors.creativecommons.org/presskit/icons/sa.svg" alt="SA" style="max-width: 1em;max-height:1em;margin-left: .2em;">
+</p>
 
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

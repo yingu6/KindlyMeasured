@@ -10,7 +10,10 @@ download git
 learn to push the site to github
 write the first post
 12/31
-learn about multilanguage site
-learn about license for posts
+learn about multi-language site (aborted)
+learn about license for posts (added)
 write the second post
+reorganize the posts
+add dark mode (added)
+explore options for adding comment section (aborted)
 - 

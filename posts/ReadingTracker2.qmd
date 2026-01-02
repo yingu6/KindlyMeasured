@@ -992,7 +992,7 @@ year_out <- make_period_sessions("2025-01-01", "2026-01-01", "Year 2025")
 
 ## Reflections
 
-irst, Goodreads lets me retrieve plenty of information about my library—titles, authors, shelves/status, ratings, and dates. But the usefulness of that export depends on how consistently I keep it up to date. If I don’t regularly mark books as read or currently-reading, or if I rarely add ratings, the export ends up being mostly book metadata with limited insight into my actual reading experience. 
+First, Goodreads lets me retrieve plenty of information about my library—titles, authors, shelves/status, ratings, and dates. But the usefulness of that export depends on how consistently I keep it up to date. If I don’t regularly mark books as read or currently-reading, or if I rarely add ratings, the export ends up being mostly book metadata with limited insight into my actual reading experience. 
 
 Second, Goodreads still misses a few pieces that I personally care about. It doesn’t include reading progress (like percentage or pages) in the export—even though you can enter progress while reading. Also, there isn't a “genre” field. As I looked into this, I realized a book can be labeled with many genres on Goodreads, which makes genre harder to use consistently in analysis, even if it's available in the export.
 

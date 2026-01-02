@@ -1,6 +1,7 @@
 ---
 title: "Kindly Measured Reading [3/3]: The Patterns"
-date: 2025-12-31
+date: 2026-01-02
+draft: true
 categories: [reading, tracking, shortcuts, calendar, r, rmarkdown]
 description: "Turning reading logs into insights -- data cleaning and visualizations in Rmarkdown"
 ---

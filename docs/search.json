@@ -25,7 +25,7 @@
     "href": "posts/ReadingTracker2.html",
     "title": "Kindly Measured Reading [2/3]: The Data",
     "section": "",
-    "text": "In the previous post, I talked about how I built a lightweight Reading Time Tracker (Shortcuts → Calendar) so each reading session gets logged automatically.\nIn this post, I’ll walk through how to export calendar events as an .ics file, export your Goodreads library as a .csv, and then import and review both in R. The goal is to end up with a clean, analysis-ready dataset where:\nAlong the way, I’ll point out what each source includes (and what it doesn’t), and show a few simple, general cleaning steps needed to line up book titles across the two exports. In the following post, I’ll use the cleaned, merged dataset to summarize and visualize reading time patterns."
+    "text": "In the previous post, I talked about how I built a lightweight Reading Time Tracker (Shortcuts → Calendar) so each reading session gets logged automatically.\nIn this post, I’ll walk through how to export calendar events as an .ics file, export the Goodreads library as a .csv, and then import and review both in R. The goal is to end up with a clean, analysis-ready dataset where:\nAlong the way, I’ll point out what each source includes (and what it doesn’t), and show a few simple, general cleaning steps needed to line up book titles across the two exports. In the following post, I’ll use the cleaned, merged dataset to summarize and visualize reading time patterns."
   },
   {
     "objectID": "posts/ReadingTracker2.html#exporting-.ics-from-calendar",

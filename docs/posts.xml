@@ -21,7 +21,7 @@
 
 
 <p>In the previous post, I talked about how I built a lightweight <strong>Reading Time Tracker</strong> (Shortcuts → Calendar) so each reading session gets logged automatically.</p>
-<p>In this post, I’ll walk through how to export calendar events as an <code>.ics</code> file, export your Goodreads library as a <code>.csv</code>, and then import and review both in R. The goal is to end up with a clean, analysis-ready dataset where:</p>
+<p>In this post, I’ll walk through how to export calendar events as an <code>.ics</code> file, export the Goodreads library as a <code>.csv</code>, and then import and review both in R. The goal is to end up with a clean, analysis-ready dataset where:</p>
 <ul>
 <li>the <strong>Calendar data</strong> tells me <em>when</em> I read (session-level start/end times)</li>
 <li>the <strong>Goodreads data</strong> tells me <em>what</em> I read (book-level metadata like author/ISBN/shelf/ratings)</li>

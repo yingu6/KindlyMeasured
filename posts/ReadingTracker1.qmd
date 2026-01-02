@@ -1,6 +1,6 @@
 ---
-title: "Kindly Measured Reading [1/3]: The Time Tracker"
-date: 2025-12-30
+title: "Kindly Measured Reading [1/3]: The Reading Time Tracker"
+date: 2026-01-02
 categories: [reading, tracking, shortcuts, calendar, ios]
 description: "Why I built a reading time tracker, the zigzags along the way, and the Shortcuts setup that finally stuck"
 bibliography: references.bib

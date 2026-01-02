@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="dcterms.date" content="2025-12-31">
-<meta name="description" content="From .ics and Goodreads CSV to a clean dataset – what’s included, what’s missing, and how I join them">
+<meta name="description" content="Merge Calendar.ics and Goodreads CSV datasets in R">
 
 <title>Kindly Measured Reading [2/3]: The Data – Kindly Measured</title>
 <style>
@@ -113,7 +113,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <link rel="stylesheet" href="../styles.css">
 <meta property="og:title" content="Kindly Measured Reading [2/3]: The Data – Kindly Measured">
-<meta property="og:description" content="From .ics and Goodreads CSV to a clean dataset – what’s included, what’s missing, and how I join them">
+<meta property="og:description" content="Merge Calendar.ics and Goodreads CSV datasets in R">
 <meta property="og:site_name" content="Kindly Measured">
 </head>
 
@@ -351,6 +351,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#pick-a-quarter" id="toc-pick-a-quarter" class="nav-link" data-scroll-target="#pick-a-quarter">Pick a quarter</a></li>
   <li><a href="#pick-a-year" id="toc-pick-a-year" class="nav-link" data-scroll-target="#pick-a-year">Pick a year</a></li>
   </ul></li>
+  <li><a href="#reflections" id="toc-reflections" class="nav-link" data-scroll-target="#reflections">Reflections</a></li>
   </ul>
 </nav>
     </div>
@@ -373,7 +374,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <div>
   <div class="description">
-    From .ics and Goodreads CSV to a clean dataset – what’s included, what’s missing, and how I join them
+    Merge Calendar.ics and Goodreads CSV datasets in R
   </div>
 </div>
 
@@ -388,6 +389,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </div>
   </div>
   
+    <div>
+    <div class="quarto-title-meta-heading">Modified</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date-modified">January 1, 2026</p>
+    </div>
+  </div>
     
   </div>
   
@@ -402,7 +409,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>the <strong>Calendar data</strong> tells me <em>when</em> I read (session-level start/end times)</li>
 <li>the <strong>Goodreads data</strong> tells me <em>what</em> I read (book-level metadata like author/ISBN/shelf/ratings)</li>
 </ul>
-<p>Along the way, I’ll point out what each source includes (and what it doesn’t), and show a few simple, general cleaning steps needed to line up book titles across the two exports. In the following post, I’ll use the cleaned data to summarize and visualize reading time patterns.</p>
+<p>Along the way, I’ll point out what each source includes (and what it doesn’t), and show a few simple, general cleaning steps needed to line up book titles across the two exports. In the following post, I’ll use the cleaned, merged dataset to summarize and visualize reading time patterns.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -2029,9 +2036,19 @@ Extra duplicate rows: 1</code></pre>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>year_out <span class="ot">&lt;-</span> <span class="fu">make_period_sessions</span>(<span class="st">"2025-01-01"</span>, <span class="st">"2026-01-01"</span>, <span class="st">"Year 2025"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-
-
 </section>
+</section>
+<section id="reflections" class="level2">
+<h2 class="anchored" data-anchor-id="reflections">Reflections</h2>
+<p>irst, Goodreads lets me retrieve plenty of information about my library—titles, authors, shelves/status, ratings, and dates. But the usefulness of that export depends on how consistently I keep it up to date. If I don’t regularly mark books as read or currently-reading, or if I rarely add ratings, the export ends up being mostly book metadata with limited insight into my actual reading experience.</p>
+<p>Second, Goodreads still misses a few pieces that I personally care about. It doesn’t include reading progress (like percentage or pages) in the export—even though you can enter progress while reading. Also, there isn’t a “genre” field. As I looked into this, I realized a book can be labeled with many genres on Goodreads, which makes genre harder to use consistently in analysis, even if it’s available in the export.</p>
+<p>In comparison, my tracker’s data (the Calendar data) is much smaller and more manageable. My goal is to keep this tracker clean and easy to maintain, so that when I get to the analysis step later, I’m working with data that’s straightforward to filter, summarize and link to the Goodreads data.</p>
+<hr>
+<p>
+This work is licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> <img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="CC" style="max-width: 1em;max-height:1em;margin-left: .2em;"> <img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt="BY" style="max-width: 1em;max-height:1em;margin-left: .2em;"> <img src="https://mirrors.creativecommons.org/presskit/icons/sa.svg" alt="SA" style="max-width: 1em;max-height:1em;margin-left: .2em;">
+</p>
+
+
 </section>
 
 </main> <!-- /main -->

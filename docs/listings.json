@@ -2,10 +2,10 @@
   {
     "listing": "/posts.html",
     "items": [
+      "/posts/ReadingTracker1.html",
       "/posts/ReadingTracker2.html",
       "/posts/ReadingTracker3.html",
-      "/posts/Website.html",
-      "/posts/ReadingTracker1.html"
+      "/posts/Website.html"
     ]
   }
 ]

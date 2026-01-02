@@ -1,8 +1,9 @@
 ---
 title: "Kindly Measured Reading [2/3]: The Data"
 date: 2025-12-31
+date-modified: 2026-01-01
 categories: [reading, tracking, shortcuts, calendar, r, rmarkdown]
-description: "From .ics and Goodreads CSV to a clean dataset -- what’s included, what’s missing, and how I join them"
+description: "Merge Calendar.ics and Goodreads CSV datasets in R"
 ---
 
 In the previous post, I talked about how I built a lightweight **Reading Time Tracker** (Shortcuts → Calendar) so each reading session gets logged automatically.
@@ -12,7 +13,7 @@ In this post, I’ll walk through how to export calendar events as an `.ics` fil
 - the **Calendar data** tells me *when* I read (session-level start/end times)
 - the **Goodreads data** tells me *what* I read (book-level metadata like author/ISBN/shelf/ratings)
 
-Along the way, I’ll point out what each source includes (and what it doesn’t), and show a few simple, general cleaning steps needed to line up book titles across the two exports. In the following post, I’ll use the cleaned data to summarize and visualize reading time patterns.
+Along the way, I’ll point out what each source includes (and what it doesn’t), and show a few simple, general cleaning steps needed to line up book titles across the two exports. In the following post, I’ll use the cleaned, merged dataset to summarize and visualize reading time patterns.
 
 ::: {.callout-note}
 ## At a glance
@@ -989,4 +990,16 @@ year_out <- make_period_sessions("2025-01-01", "2026-01-01", "Year 2025")
 ```
 
 
+## Reflections
+
+irst, Goodreads lets me retrieve plenty of information about my library—titles, authors, shelves/status, ratings, and dates. But the usefulness of that export depends on how consistently I keep it up to date. If I don’t regularly mark books as read or currently-reading, or if I rarely add ratings, the export ends up being mostly book metadata with limited insight into my actual reading experience. 
+
+Second, Goodreads still misses a few pieces that I personally care about. It doesn’t include reading progress (like percentage or pages) in the export—even though you can enter progress while reading. Also, there isn't a “genre” field. As I looked into this, I realized a book can be labeled with many genres on Goodreads, which makes genre harder to use consistently in analysis, even if it's available in the export.
+
+In comparison, my tracker's data (the Calendar data) is much smaller and more manageable. My goal is to keep this tracker clean and easy to maintain, so that when I get to the analysis step later, I’m working with data that's straightforward to filter, summarize and link to the Goodreads data. 
+
+
+<hr>
+
+<p>This work is licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> <img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="CC" style="max-width: 1em;max-height:1em;margin-left: .2em;"/> <img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt="BY" style="max-width: 1em;max-height:1em;margin-left: .2em;"/> <img src="https://mirrors.creativecommons.org/presskit/icons/sa.svg" alt="SA" style="max-width: 1em;max-height:1em;margin-left: .2em;"/></p>
 
